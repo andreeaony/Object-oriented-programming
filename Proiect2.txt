@@ -1,0 +1,1351 @@
+#include <iostream>
+#include <cstring>
+#include <vector>
+#include <cstdlib>
+using namespace std;
+
+class IOInterface
+{
+    public:
+        virtual istream& citire(istream& in)=0;
+        virtual ostream& afisare(ostream& out)const=0;
+};
+
+class ProdusLucratManual:public IOInterface
+{
+    protected:
+        string denumireProdus;
+        float pretProdus;
+        int stocProdus;
+        string materialProdus;
+        string categorieProdus;
+    public:
+        ///Constructorii
+        ProdusLucratManual(); //constructorul fara parametri
+        ProdusLucratManual(string, float, int, string, string); //constructorul cu toti parametri
+        ProdusLucratManual(const ProdusLucratManual&); //copy-constructor
+
+        ///Operatorul =
+        ProdusLucratManual& operator = (const ProdusLucratManual&);
+
+        ///Operatorii de citire si afisare
+        friend istream& operator >> (istream& in, ProdusLucratManual& produs);
+        friend ostream& operator << (ostream& out, const ProdusLucratManual& produs);
+
+        ///Functii de citire si afisare
+        istream& citire(istream& in);
+        ostream& afisare(ostream& out) const;
+
+        ///Functionalitati
+        //Metoda virtuala pura => CLASA ABSTRACTA
+        //Totodata, metoda constanta - urmeaza sa fie implementata in clasele mostenitoare
+        virtual string verificaStocProdus()=0;
+        virtual float calculeazaProfitAproximativ() const =0;
+        virtual string getDenumireProdus();
+        virtual void actualizeazaPret(float);
+        virtual void setDenumireProdus(string);
+
+        ///Destructorul
+        ~ProdusLucratManual(){}
+};
+///Constructorii
+ProdusLucratManual :: ProdusLucratManual(): denumireProdus("Anonim"), pretProdus(0), stocProdus(0), materialProdus("Anonim"), categorieProdus("Anonim"){}
+ProdusLucratManual :: ProdusLucratManual(string denumireProdus, float pretProdus, int stocProdus, string materialProdus, string categorieProdus):denumireProdus(denumireProdus), pretProdus(pretProdus), stocProdus(stocProdus), materialProdus(materialProdus), categorieProdus(categorieProdus){}
+ProdusLucratManual :: ProdusLucratManual(const ProdusLucratManual& produs): denumireProdus(produs.denumireProdus), pretProdus(produs.pretProdus), stocProdus(produs.stocProdus), materialProdus(produs.materialProdus), categorieProdus(produs.categorieProdus){}
+
+///Operatorul =
+ProdusLucratManual& ProdusLucratManual :: operator = (const ProdusLucratManual& produs)
+{
+    if(this!=&produs)
+    {
+        this->denumireProdus=produs.denumireProdus;
+        this->pretProdus=produs.pretProdus;
+        this->stocProdus=produs.stocProdus;
+        this->materialProdus=produs.materialProdus;
+        this->categorieProdus=produs.categorieProdus;
+    }
+    return *this;
+}
+
+///Operatorii de citire si afisare
+istream& operator >> (istream& in, ProdusLucratManual& produs)
+{
+    return produs.citire(in);
+}
+ostream& operator << (ostream& out, const ProdusLucratManual& produs)
+{
+    return produs.afisare(out);
+}
+
+///Functii de citire si afisare
+istream& ProdusLucratManual :: citire(istream& in)
+{
+    cout<<"Denumirea produsului este: ";
+    in>>this->denumireProdus;
+    cout<<"Pretul produsului este: ";
+    in>>this->pretProdus;
+    cout<<"Stocul curent al produsului este: ";
+    in>>this->stocProdus;
+    cout<<"Materialul din care este confectionat produsul este: ";
+    in>>this->materialProdus;
+    cout<<"Categoria din care face parte produsul este: ";
+    in>>this->categorieProdus;
+    return in;
+}
+ostream& ProdusLucratManual :: afisare(ostream& out) const
+{
+    out<<"Denumirea produsului este: "<<this->denumireProdus<<'\n';
+    out<<"Pretul produsului este: "<<this->pretProdus<<'\n';
+    out<<"Stocul curent al produsului este: "<<this->stocProdus<<'\n';
+    out<<"Materialul din care este confectionat produsul este: "<<this->materialProdus<<'\n';
+    out<<"Categoria din care face parte produsul este: "<<this->categorieProdus<<'\n';
+    return out;
+}
+
+///Functionalitati
+string ProdusLucratManual :: getDenumireProdus()
+{
+    return this->denumireProdus;
+}
+void ProdusLucratManual :: actualizeazaPret(float pretNou)
+{
+    this->pretProdus=pretNou;
+}
+void ProdusLucratManual :: setDenumireProdus(string numeNou)
+{
+    this->denumireProdus=numeNou;
+}
+
+
+class Pictura:virtual public ProdusLucratManual
+{
+    protected:
+        int numarCuloriFolosite;
+        string tehnicaPictura; //ulei, acrilic, acuarela...
+    public:
+        ///Constructorii
+        Pictura(); //constructorul fara parametri
+        Pictura(string, float, int, string, string, int, string); //constructor cu toti parametri
+        Pictura(const Pictura&); //copy-constructor
+
+        ///Operatorul =
+        Pictura& operator = (const Pictura&);
+
+        ///Functii de citire si de afisare
+        istream& citire(istream& in);
+        ostream& afisare(ostream& out) const;
+
+        ///Functionalitati
+        string verificaStocProdus();
+        float calculeazaProfitAproximativ() const;
+
+        ///Alti operatori
+        Pictura& operator +(string materialNou);
+
+        ///Destructorul
+        ~Pictura(){}
+};
+///Constructorii
+Pictura :: Pictura():ProdusLucratManual(), numarCuloriFolosite(0), tehnicaPictura("Anonim"){}
+Pictura :: Pictura(string denumireProdus, float pretProdus, int stocProdus, string materialProdus, string categorieProdus, int numarCuloriFolosite, string tehnicaPictura)
+                   :ProdusLucratManual(denumireProdus, pretProdus, stocProdus, materialProdus, categorieProdus),
+                    numarCuloriFolosite(numarCuloriFolosite), tehnicaPictura(tehnicaPictura){}
+Pictura :: Pictura(const Pictura& produs):ProdusLucratManual(produs), numarCuloriFolosite(produs.numarCuloriFolosite), tehnicaPictura(produs.tehnicaPictura){}
+
+///Operatorul =
+Pictura& Pictura :: operator = (const Pictura& produs)
+{
+    if(this!=&produs)
+    {
+        ProdusLucratManual :: operator = (produs);
+        this->numarCuloriFolosite=produs.numarCuloriFolosite;
+        this->tehnicaPictura=produs.tehnicaPictura;
+    }
+    return *this;
+}
+
+///Functii de citire si afisare
+istream& Pictura :: citire(istream& in)
+{
+    this->ProdusLucratManual :: citire(in);
+    cout<<"Numarul de culori folosite in realizarea picturii este: ";
+    in>>this->numarCuloriFolosite;
+    cout<<"Tehnica de pictura utilizata este: ";
+    in>>this->tehnicaPictura;
+    return in;
+}
+ostream& Pictura :: afisare(ostream& out) const
+{
+    this->ProdusLucratManual::afisare(out);
+    out<<"Numarul de culori folosite in realizarea picturii este: "<<this->numarCuloriFolosite<<'\n';
+    out<<"Tehnica de pictura utilizata este: "<<this->tehnicaPictura<<'\n';
+    return out;
+}
+
+///Functionalitati
+string Pictura :: verificaStocProdus()
+{
+    if(this->stocProdus>0)
+        return "Stoc disponibil";
+    return "Stoc epuizat";
+}
+float Pictura :: calculeazaProfitAproximativ() const //presupunem ca in general se vinde aproximativ 80% din stocul produsului
+{
+    return this->pretProdus*this->stocProdus*0.8;
+}
+
+///Alti operatori
+Pictura& Pictura :: operator +(string materialNou)
+{
+    this->materialProdus= this->materialProdus+" & "+materialNou;
+    return *this;
+}
+
+class ProdusDinLemn:virtual public ProdusLucratManual
+{
+    protected:
+        string tipFinisaj; //ulei, lac, vopsea...
+        string tipLemn; //sejar, fag...
+        int indicatorDuritateLemn;
+    public:
+        ///Constructorii
+        ProdusDinLemn(); //constructor fara parametri
+        ProdusDinLemn(string, float, int, string, string, string, string, int); //constructor cu toti parametri
+        ProdusDinLemn(const ProdusDinLemn&); //copy-constructor
+
+        ///Operatorul =
+        ProdusDinLemn& operator = (const ProdusDinLemn&);
+
+        ///Functii de citire si afisare
+        istream& citire(istream& in);
+        ostream& afisare(ostream& out) const;
+
+        ///Functionalitati
+        string verificaStocProdus();
+        float calculeazaProfitAproximativ() const;
+
+        ///Alti operatori
+        ProdusDinLemn& operator +(string);
+
+        ///Destructorul
+        ~ProdusDinLemn(){}
+};
+///Constructorii
+ProdusDinLemn :: ProdusDinLemn():ProdusLucratManual(), tipFinisaj("Anonim"), tipLemn("Anonim"), indicatorDuritateLemn(0){}
+ProdusDinLemn :: ProdusDinLemn(string denumireProdus, float pretProdus, int stocProdus, string materialProdus, string categorieProdus, string tipFinisaj, string tipLemn, int indicatorDuritateLemn)
+                 :ProdusLucratManual(denumireProdus, pretProdus, stocProdus, materialProdus, categorieProdus),
+                 tipFinisaj(tipFinisaj), tipLemn(tipLemn), indicatorDuritateLemn(indicatorDuritateLemn){}
+ProdusDinLemn :: ProdusDinLemn(const ProdusDinLemn& produs):ProdusLucratManual(produs), tipFinisaj(produs.tipFinisaj), tipLemn(produs.tipLemn), indicatorDuritateLemn(produs.indicatorDuritateLemn){}
+
+///Operatorul =
+ProdusDinLemn& ProdusDinLemn :: operator = (const ProdusDinLemn& produs)
+{
+    if(this!=&produs)
+    {
+        this->ProdusLucratManual :: operator = (produs);
+        this->tipFinisaj=produs.tipFinisaj;
+        this->tipLemn=produs.tipLemn;
+        this->indicatorDuritateLemn=produs.indicatorDuritateLemn;
+    }
+    return *this;
+}
+
+///Functii de citire si afisare
+istream& ProdusDinLemn :: citire(istream& in)
+{
+    this->ProdusLucratManual :: citire(in);
+    cout<<"Tipul finisajului pentru produsul curent este: ";
+    in>>this->tipFinisaj;
+    cout<<"Tipul lemnului produsului curent este: ";
+    in>>this->tipLemn;
+    cout<<"Indicatorul de duritate al lemnului folosit(de la 1 la 10) este: ";
+    in>>this->indicatorDuritateLemn;
+    return in;
+}
+ostream& ProdusDinLemn :: afisare(ostream& out) const
+{
+    this->ProdusLucratManual :: afisare(out);
+    out<<"Tipul finisajului pentru produsul curent este: "<<this->tipFinisaj<<'\n';
+    out<<"Tipul lemnului produsului curent este: "<<this->tipLemn<<'\n';
+    out<<"Indicatorul de duritate al lemnului folosit(de la 1 la 10) este: "<<this->indicatorDuritateLemn<<'\n';
+    return out;
+}
+
+///Functionalitati
+string ProdusDinLemn :: verificaStocProdus()
+{
+    if(this->stocProdus>0)
+        return "Stoc disponibil";
+    return "Stoc epuizat";
+}
+float ProdusDinLemn :: calculeazaProfitAproximativ() const //presupunem ca in general se vinde aproximativ 75% din stocul produsului
+{
+    return this->stocProdus*this->pretProdus*0.75;
+}
+
+///Alti operatori
+ProdusDinLemn& ProdusDinLemn :: operator +(string materialNou)
+{
+    this->materialProdus= this->materialProdus+" & "+materialNou;
+    return *this;
+}
+
+class TablouPictatPeLemn:public Pictura, public ProdusDinLemn
+{
+    private:
+        int lungimeTablou;
+        int latimeTablou;
+        bool tablouInramat;
+    public:
+        ///Constructorii
+        TablouPictatPeLemn(); //constructor fara parametri
+        TablouPictatPeLemn(string, float, int, string, string, int, string, string, string, int, int, int, bool); //constructor cu toti parametrii
+        TablouPictatPeLemn(const TablouPictatPeLemn& produs); //copy-constructor
+
+        ///Operatorul =
+        TablouPictatPeLemn& operator = (const TablouPictatPeLemn& produs);
+
+        ///Functii de citire si afisare
+        istream& citire(istream& in);
+        ostream& afisare(ostream& out) const;
+
+        ///Functionalitati
+        string verificaStocProdus();
+        float calculeazaProfitAproximativ() const;
+        string returneazaDimensiuniTablou() const;
+
+        ///Alti operatori
+        TablouPictatPeLemn& operator + (string);
+
+        ///Destructorul
+        ~TablouPictatPeLemn(){}
+};
+///Constructorii
+TablouPictatPeLemn :: TablouPictatPeLemn():Pictura(),ProdusDinLemn(), lungimeTablou(0), latimeTablou(0), tablouInramat(false){}
+TablouPictatPeLemn :: TablouPictatPeLemn(string denumireProdus, float pretProdus, int stocProdus, string materialProdus, string categorieProdus, int numarCuloriFolosite, string tehnicaPictura,
+                                         string tipFinisaj, string tipLemn, int indicatorDuritateLemn, int lungimeTablou, int latimeTablou, bool tablouInramat)
+                                         :ProdusLucratManual(denumireProdus, pretProdus, stocProdus, materialProdus, categorieProdus),
+                                          Pictura(denumireProdus, pretProdus, stocProdus, materialProdus, categorieProdus, numarCuloriFolosite, tehnicaPictura),
+                                          ProdusDinLemn(denumireProdus, pretProdus, stocProdus, materialProdus, categorieProdus, tipFinisaj, tipLemn, indicatorDuritateLemn), lungimeTablou(lungimeTablou), latimeTablou(latimeTablou), tablouInramat(tablouInramat){}
+TablouPictatPeLemn :: TablouPictatPeLemn(const TablouPictatPeLemn& produs):ProdusLucratManual(produs), Pictura(produs), ProdusDinLemn(produs), lungimeTablou(produs.lungimeTablou), latimeTablou(produs.latimeTablou), tablouInramat(produs.tablouInramat){}
+
+///Operatorul =
+TablouPictatPeLemn& TablouPictatPeLemn :: operator = (const TablouPictatPeLemn& produs)
+{
+    if(this!=&produs)
+    {
+        this->Pictura :: operator = (produs);
+        this->ProdusDinLemn :: operator = (produs);
+        this->lungimeTablou=produs.lungimeTablou;
+        this->latimeTablou=produs.latimeTablou;
+        this->tablouInramat=produs.tablouInramat;
+    }
+    return *this;
+}
+
+///Functii de citire si afisare
+istream& TablouPictatPeLemn :: citire(istream& in)
+{
+    Pictura :: citire(in);
+    cout<<"Tipul finisajului pentru produsul curent este: ";
+    in>>this->tipFinisaj;
+    cout<<"Tipul lemnului produsului curent este: ";
+    in>>this->tipLemn;
+    cout<<"Indicatorul de duritate al lemnului folosit(de la 1 la 10) este: ";
+    in>>this->indicatorDuritateLemn;
+    cout<<"Lungimea tabloului pictat pe lemn este: ";
+    in>>this->lungimeTablou;
+    cout<<"Latimea tabloului pictat pe lemn este: ";
+    in>>this->latimeTablou;
+    cout<<"Tabloul este(1) sau nu este(0) inramat: ";
+    in>>this->tablouInramat;
+    return in;
+}
+ostream& TablouPictatPeLemn :: afisare(ostream& out) const
+{
+    Pictura :: afisare(out);
+    out<<"Tipul finisajului pentru produsul curent este: "<<this->tipFinisaj<<'\n';
+    out<<"Tipul lemnului produsului curent este: "<<this->tipLemn<<'\n';
+    out<<"Indicatorul de duritate al lemnului folosit(de la 1 la 10) este: "<<this->indicatorDuritateLemn<<'\n';
+    out<<"Lungimea tabloului pictat pe lemn este: "<<this->lungimeTablou<<'\n';
+    out<<"Latimea tabloului pictat pe lemn este: "<<this->latimeTablou<<'\n';
+    if(this->tablouInramat==true)
+        out<<"Tabloul pictat pe lemn este inramat."<<'\n';
+    else
+        out<<"Tabloul pictat pe lemn NU este inramat."<<'\n';
+    return out;
+}
+
+///Functionalitati
+string TablouPictatPeLemn :: verificaStocProdus()
+{
+    if(this->stocProdus>0)
+        return "Stoc disponibil";
+    return "Stoc epuizat";
+}
+float TablouPictatPeLemn :: calculeazaProfitAproximativ() const //presupunem ca tablourile pictate pe lemn au intotdeauna vanzare de 100% din stocul disponibil
+{
+    return (this->stocProdus*this->pretProdus);
+}
+string TablouPictatPeLemn :: returneazaDimensiuniTablou() const
+{
+    return (to_string(this->lungimeTablou)+"x"+to_string(this->latimeTablou));
+}
+
+///Alti operatori
+TablouPictatPeLemn& TablouPictatPeLemn :: operator +(string materialNou)
+{
+    this->materialProdus= this->materialProdus+" & "+materialNou;
+    return *this;
+}
+
+class SalaAtelier:public IOInterface
+{
+    private:
+        string denumireSala;
+        string sefSala;
+        int numarLocuri;
+        float costuriLunare;
+        float profitLunar;
+        bool disponibilitateSala;
+    public:
+        ///Constructorii
+        SalaAtelier(); //constructorul fara parametri
+        SalaAtelier(string, string, int, float, float, bool); //constructorul cu toti parametri
+        SalaAtelier(const SalaAtelier& sala); //copy-constructor
+
+        ///Operatorul =
+        SalaAtelier& operator = (const SalaAtelier& sala);
+
+        ///Operatorii de citire si afisare
+        friend istream& operator >> (istream& in, SalaAtelier&);
+        friend ostream& operator << (ostream& out, const SalaAtelier&);
+
+        ///Functii de citire si afisare
+        istream& citire(istream& in);
+        ostream& afisare(ostream& out) const;
+
+        ///Functionalitati
+        string verificaDisponibilitateSala() const;
+        SalaAtelier& getSala(vector<SalaAtelier>& sali, int index); //obtinere sala din vectorul de sali in functie de index
+
+        ///Setteri & Getteri
+        void setSefSala(string nume)
+        {
+            this->sefSala=nume;
+        }
+        string getSefSala() const
+        {
+            return sefSala;
+        }
+        void setDenumireSala(string denumire)
+        {
+            this->denumireSala=denumire;
+        }
+        void setNumarLocuri(int numarLocuri)
+        {
+            this->numarLocuri=numarLocuri;
+        }
+        void setCosturiLunare(float costuriLunare)
+        {
+            this->costuriLunare=costuriLunare;
+        }
+        void setProfitLunar(float profit)
+        {
+            this->profitLunar=profit;
+        }
+        void setDisponibilitateSala(bool disponibilitate)
+        {
+            this->disponibilitateSala=disponibilitate;
+        }
+
+        ///Destructorul
+        ~SalaAtelier(){}
+};
+///Constructorii
+SalaAtelier :: SalaAtelier(): denumireSala("Anonim"), sefSala("Anonim"), numarLocuri(0), costuriLunare(0), profitLunar(0), disponibilitateSala(false){}
+SalaAtelier :: SalaAtelier(string denumireSala, string sefSala, int numarLocuri, float costuriLunare, float profitLunar, bool disponibilitateSala): denumireSala(denumireSala), sefSala(sefSala), numarLocuri(numarLocuri), costuriLunare(costuriLunare), profitLunar(profitLunar), disponibilitateSala(disponibilitateSala){}
+SalaAtelier :: SalaAtelier(const SalaAtelier& sala): denumireSala(sala.denumireSala), sefSala(sala.sefSala), numarLocuri(sala.numarLocuri), costuriLunare(sala.costuriLunare), profitLunar(sala.profitLunar), disponibilitateSala(sala.disponibilitateSala){}
+
+///Operatorul =
+SalaAtelier& SalaAtelier :: operator = (const SalaAtelier& sala)
+{
+    if(this!=&sala)
+    {
+        this->denumireSala=sala.denumireSala;
+        this->sefSala=sala.sefSala;
+        this->numarLocuri=sala.numarLocuri;
+        this->costuriLunare=sala.costuriLunare;
+        this->profitLunar=sala.profitLunar;
+        this->disponibilitateSala=sala.disponibilitateSala;
+    }
+    return *this;
+}
+
+///Operatorii de citire si afisare
+istream& operator >> (istream& in, SalaAtelier& sala)
+{
+    return sala.citire(in);
+}
+ostream& operator << (ostream& out, const SalaAtelier& sala)
+{
+    return sala.afisare(out);
+}
+
+///Functii de citire si afisare
+istream& SalaAtelier :: citire(istream& in)
+{
+    cout<<"Numele salii este: ";
+    in>>this->denumireSala;
+    cout<<"Numele sefului de sala este: ";
+    in>>this->sefSala;
+    cout<<"Numarul de locuri din sala este de: ";
+    in>>this->numarLocuri;
+    cout<<"Costurile lunare aferente salii sunt in valoare de: ";
+    in>>this->costuriLunare;
+    cout<<"Profitul lunar aferent salii este de: ";
+    in>>this->profitLunar;
+    cout<<"Disponibilitatea salii: ";
+    in>>this->disponibilitateSala;
+    return in;
+}
+ostream& SalaAtelier :: afisare(ostream& out) const
+{
+    out<<"Numele salii este: "<<this->denumireSala<<'\n';
+    out<<"Numele sefului de sala este: "<<this->sefSala<<'\n';
+    out<<"Numarul de locuri din sala este de: "<<this->numarLocuri<<'\n';
+    out<<"Costurile lunare aferente salii sunt in valoare de: "<<this->costuriLunare<<'\n';
+    out<<"Profitul lunar aferent salii este de: "<<this->profitLunar<<'\n';
+    if(this->disponibilitateSala==true)
+        out<<"Sala este disponibila."<<'\n';
+    else
+        out<<"Sala NU este disponibila."<<'\n';
+    return out;
+}
+
+///Functionalitati
+string SalaAtelier :: verificaDisponibilitateSala() const
+{
+    if(this->disponibilitateSala==true)
+        return "Sala disponibila";
+    return "Sala indisponibila";
+}
+SalaAtelier& SalaAtelier :: getSala(vector<SalaAtelier>& sali, int index)
+{
+    if(index>=0 && index<sali.size())
+        return sali[index];
+    else throw runtime_error("Index invalid!");
+}
+
+int main()
+{
+    ///Initializare vectori
+
+    vector<SalaAtelier> sali;
+
+    SalaAtelier s1("Mestesuguri", "Andreea", 55, 2345.88, 1235, true);
+    SalaAtelier s2("Tamplarie", "Elena", 60, 4332.75, 2345.5, true);
+    SalaAtelier s3("Desen", "Eduard", 44, 2267.33, 1633, true);
+    SalaAtelier s4("Creionaj", "Mara", 30, 1998.7, 1220, true);
+
+    sali.push_back(s1);
+    sali.push_back(s2);
+    sali.push_back(s3);
+    sali.push_back(s4);
+
+    vector<ProdusLucratManual*> produse;
+
+    produse.push_back(new Pictura("Toamna", 87.55, 5, "panza", "arta", 12, "ulei"));
+    produse.push_back(new Pictura("Iarna",90.55, 6, "panza", "arta", 5, "acrilic"));
+    produse.push_back(new ProdusDinLemn("Suport de stilou", 55.3, 45, "lemn", "utile", "lac", "stejar", 5));
+    produse.push_back(new TablouPictatPeLemn("Vara", 123.85, 5, "lemn", "arta", 10, "acuarela", "lac", "fag", 6, 50, 50, 1));
+    produse.push_back(new TablouPictatPeLemn("Animale", 225.65, 7, "lemn", "arta", 22, "acril", "ulei", "stejar", 4, 20, 40, 0));
+    produse.push_back(new ProdusDinLemn("Breloc", 12.5, 134, "lemn", "accesorii", "vopsea", "fag", 8));
+    produse.push_back(new TablouPictatPeLemn("Autoportret",557.99, 2, "lemn", "arta", 33, "ulei", "lac", "stejar", 8, 35, 55, 1));
+
+    vector<string> recenzii;
+
+    recenzii.push_back("Acest atelier este unul foarte calitativ, cu produse de tot felul! Recomand!");
+    recenzii.push_back("Recomand cu incredere atelierul! De 2 ani comand doar de la ei tablouri si sunt extrem de multumita de calitatea lor!");
+    recenzii.push_back("Fiica mea adora tablourile dumneavoastra! Cu siguranta vom reveni!");
+    recenzii.push_back("Obiectele din lemn sunt lucrate minutios, se vede ca echipa este una desavarsita!");
+    recenzii.push_back("Am cumparat un tablou pe panza de la ei acum un an si jumatate iar baietelul meu a reusit sa il indoaie. Cei de la atelier au fost foarte draguti si mi l-au inlocuit! Sunteti cei mai tari!");
+    recenzii.push_back("Cei mai buni din oras, daca nu si din tara!");
+    recenzii.push_back("Recomand cu incredere!");
+
+
+
+    ///~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~MENIU INTERACTIV~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    cout<<"                                  BUN VENIT LA ATELIERUL DE LUCRU MANUAL!                                  "<<'\n'<<'\n';
+    cout<<"~~>Daca doriti sa operati asupra salilor atelierului nostru, apasati tasta 1."<<'\n';
+    cout<<"~~>Daca doriti sa operati asupra produselor din atelierul nostru, apasati tasta 2."<<'\n';
+    cout<<"~~>Daca doriti sa lasati o recenzie, apasati tasta 3."<<'\n';
+    cout<<"~~>Daca doriti sa vizualizati ofertele din atelierul nostru, apasati tasta 4."<<'\n';
+
+    int tasta;
+    cin>>tasta;
+
+    system("cls");
+    while(tasta!=9)
+    {
+        switch(tasta)
+        {
+            case 1: //sala atelier
+            {
+                cout<<"                                  Ati selectat <<<<<SALA ATELIER>>>>>                                  "<<'\n'<<'\n';
+                cout<<"~~>Va rugam sa introduceti numele dumneavoastra. Puteti opera asupra salilor doar daca sunteti seful uneia."<<'\n'<<'\n'<<'\n'<<'\n';
+                cout<<"n u m e ~~~> ";
+                string nume;
+                cin>>nume;
+
+                system("cls");
+                bool sefModificat=false;
+                bool salaStearsa=false;
+
+                //verific daca am in sistem numele citit la tastatura drept sef de sala
+                int gasit=-1;
+                for(auto sala=sali.begin(); sala<=sali.end(); sala++)
+                {
+                    int indice=distance(sali.begin(),sala);
+                    if(nume==sala->getSefSala())
+                    {
+                        gasit=indice;
+                        break;
+                    }
+                }
+
+                //daca gasesc numele printre sefii de sali din atelier atunci pot opera pe sala de atelier a sefului respectiv
+                if(gasit!=-1 && gasit<sali.size())
+                {
+                    SalaAtelier& sala=sali[gasit].getSala(sali, gasit);
+                    cout<<"~~>Buna ziua, "<<sala.getSefSala()<<"! Aveti dreptul sa operati asupra salilor. Va rugam sa alegeti urmatoarea operatiune."<<'\n';
+                    cout<<"~~>Pentru a crea o sala noua, apasati tasta 1."<<'\n';
+                    cout<<"~~>Pentru afisarea salii dumneavoastra, apasati tasta 2."<<'\n';
+                    cout<<"~~>Pentru modificarea datelor despre sala dumneavoastra, apasati tasta 3."<<'\n';
+                    cout<<"~~>Pentru stergerea salii dumneavoastra, apasati tasta 4."<<'\n';
+                    cin>>tasta;
+                    while(tasta!=9)
+                    {
+                        switch(tasta)
+                        {
+                            case 1: //creare sala
+                            {
+                                  system("cls");
+                                  SalaAtelier salaNoua;
+                                  cin>>salaNoua;
+                                  sali.push_back(salaNoua);
+                                  cout<<"\n~~>O noua sala a fost creata cu succes. Iata sala noua: \n\n";
+                                  cout<<salaNoua<<"\n\n";
+                                  cout<<"~~>Daca doriti sa efectuati o alta operatiune asupra salii dumneavoastra, apasati 0. Altfel, apasati 9."<<'\n';
+                                  cin>>tasta;
+                                  system("cls");
+                                  break;
+                            }
+                            case 2: //afisare sala
+                            {
+                                system("cls");
+                                SalaAtelier& sala=sali[gasit].getSala(sali, gasit);
+                                cout<<"~~>"<<nume<<", aceasta este sala dumneavoastra:\n"<<sala<<'\n'<<'\n';
+                                cout<<"~~>Daca doriti sa efectuati o alta operatiune asupra salii dumneavoastra, apasati 0. Altfel, apasati 9."<<'\n';
+                                cin>>tasta;
+                                system("cls");
+                                break;
+                            }
+                            case 3: //modificare sala
+                            {
+                                system("cls");
+                                SalaAtelier& sala=sali[gasit].getSala(sali, gasit);
+                                cout<<"~~>"+nume+", ce ati dori sa modificati la sala dumneavoastra?\n";
+                                cout<<"~~>In functie de ceea ce doriti sa modificati, va rugam sa apasati tasta corespunzatoare.\n\n\n";
+                                cout<<"<1>seful salii\n<2>numele salii\n<3>disponibilitatea salii\n<4>numarul de locuri din sala\n<5>costurile lunare aferente salii\n<6>profitul lunar aferent salii\n\n";
+                                cout<<"~~>Tasta dumneavoastra: ";
+                                cin>>tasta;
+                                system("cls");
+                                while(tasta!=9 && sefModificat==false)
+                                {
+                                    switch(tasta)
+                                    {
+                                        case 1:
+                                        {
+                                            string inlocuieste;
+                                            cout<<"~~>Numele cu care doriti sa inlocuiti seful de sala este: ";
+                                            cin>>inlocuieste;
+                                            sala.setSefSala(inlocuieste);
+                                            cout<<"~~>Seful de sala a fost actualizat. Datele actualizate despre sala sunt:\n\n"<<sala;
+                                            sefModificat=true;
+                                            cout<<"\n\n~~>Nu mai sunteti seful acestei sali, deci nu mai aveti dreptul de a opera asupra salilor.\n\n\n";
+                                            tasta=9;
+                                            break;
+                                        }
+                                        case 2:
+                                        {
+                                            string inlocuieste;
+                                            cout<<"~~>Numele cu care doriti sa inlocuiti numele salii este: ";
+                                            cin>>inlocuieste;
+                                            sala.setDenumireSala(inlocuieste);
+                                            cout<<"~~>Numele salii a fost actualizat. Datele actualizate despre sala sunt:\n\n"<<sala;
+                                            cout<<"\n\n~~>Doriti sa modificati si altceva? Daca da, apasati 0. Daca nu, apasati 9.\n";
+                                            cin>>tasta;
+                                            system("cls");
+                                            break;
+                                        }
+                                        case 3:
+                                        {
+                                            bool inlocuieste;
+                                            cout<<"~~>Noua disponibilitate a salii este: ";
+                                            cin>>inlocuieste;
+                                            sala.setDisponibilitateSala(inlocuieste);
+                                            cout<<"~~>Disponibilitatea salii a fost modificata. Datele actualizate despre sala sunt:\n\n"<<sala;
+                                            cout<<"\n\n~~>Doriti sa modificati si altceva? Daca da, apasati 0. Daca nu, apasati 9.\n";
+                                            cin>>tasta;
+                                            system("cls");
+                                            break;
+                                        }
+                                        case 4:
+                                        {
+                                            int inlocuieste;
+                                            cout<<"~~>Noul numar de locuri al salii este: ";
+                                            cin>>inlocuieste;
+                                            sala.setNumarLocuri(inlocuieste);
+                                            cout<<"~~>Numarul de locuri alocate salii a fost modificat. Datele actualizate despre sala sunt:\n\n"<<sala;
+                                            cout<<"\n\n~~>Doriti sa modificati si altceva? Daca da, apasati 0. Daca nu, apasati 9.\n";
+                                            cin>>tasta;
+                                            system("cls");
+                                            break;
+                                        }
+                                        case 5:
+                                        {
+                                            float inlocuieste;
+                                            cout<<"~~>Noile costuri lunare aferente salii sunt: ";
+                                            cin>>inlocuieste;
+                                            sala.setCosturiLunare(inlocuieste);
+                                            cout<<"~~>Costurile lunare aferente salii au fost actualizate. Datele actualizate despre sala sunt:\n\n"<<sala;
+                                            cout<<"\n\n~~>Doriti sa modificati si altceva? Daca da, apasati 0. Daca nu, apasati 9.\n";
+                                            cin>>tasta;
+                                            system("cls");
+                                            break;
+                                        }
+                                        case 6:
+                                        {
+                                            float inlocuieste;
+                                            cout<<"~~>Noul profit lunar aferent salii este: ";
+                                            cin>>inlocuieste;
+                                            sala.setProfitLunar(inlocuieste);
+                                            cout<<"~~>Profitul salii a fost actualizat. Datele actualizate despre sala sunt:\n\n"<<sala;
+                                            cout<<"\n\n~~>Doriti sa modificati si altceva? Daca da, apasati 0. Daca nu, apasati 9.\n";
+                                            cin>>tasta;
+                                            system("cls");
+                                            break;
+                                        }
+                                        case 0:
+                                        {
+                                            SalaAtelier& sala=sali[gasit].getSala(sali, gasit);
+                                            cout<<"~~>"+nume+", ce ati dori sa modificati la sala dumneavoastra?\n";
+                                            cout<<"~~>In functie de ceea ce doriti sa modificati, va rugam sa apasati tasta corespunzatoare.\n\n\n";
+                                            cout<<"<1>seful salii\n<2>numele salii\n<3>disponibilitatea salii\n<4>numarul de locuri din sala\n<5>costurile lunare aferente salii\n<6>profitul lunar aferent salii\n\n";
+                                            cout<<"~~>Tasta dumneavoastra: ";
+                                            cin>>tasta;
+                                            system("cls");
+                                            break;
+                                        }
+                                        default:
+                                        {
+                                            tasta=9;
+                                            break;
+                                        }
+                                    }
+                                }
+                                //daca seful a fost modificat, atunci seful curent nu mai are drept de operare asupra salilor
+                                if(sefModificat==false)
+                                {
+                                    system("cls");
+                                    cout<<"\n~~>Daca doriti sa efectuati o alta operatiune asupra salii dumneavoastra, apasati 0. Altfel, apasati 9."<<'\n';
+                                    cin>>tasta;
+                                    system("cls");
+                                }
+                                break;
+                            }
+                            case 4:
+                            {
+                                system("cls");
+                                sali.erase(sali.begin()+gasit);
+                                cout<<"~~>Sala dumneavoastra a fost stearsa! Va multumim ca ati colaborat cu noi!"<<'\n';
+                                tasta=9;
+                                salaStearsa=true;
+                                break;
+                            }
+                            case 0:
+                            {
+                                if(sefModificat==false)
+                                {
+                                    system("cls");
+                                    cout<<"~~>Pentru a crea o sala noua, apasati tasta 1."<<'\n';
+                                    cout<<"~~>Pentru afisarea salii dumneavoastra, apasati tasta 2."<<'\n';
+                                    cout<<"~~>Pentru modificarea datelor despre sala dumneavoastra, apasati tasta 3."<<'\n';
+                                    cout<<"~~>Pentru stergerea salii dumneavoastra, apasati tasta 4."<<'\n';
+                                    cin>>tasta;
+                                }
+                                break;
+                            }
+                            default:
+                            {
+                                tasta=9;
+                                break;
+                            }
+                        }
+                    }
+                }
+                cout<<"\n\n~~>Multumim ca ati operat asupra salilor de atelier!\n\n";
+                if(sefModificat==false && salaStearsa==false)
+                {
+                    cout<<"\n\n~~>Daca doriti sa efectuati o alta operatiune in cadrul atelierului de lucru manual, apasati 0. Altfel, apasati 9."<<'\n';
+                    cin>>tasta;
+                }
+                break;
+            }
+            case 2: //produse
+            {
+                cout<<"                                  Ati selectat <<<<<PRODUSE LUCRATE MANUAL>>>>>                                  "<<'\n'<<'\n';
+                cout<<"~~>Va rugam sa introduceti numele dumneavoastra. Puteti opera asupra produselor din atelier doar daca sunteti seful unei sali."<<'\n'<<'\n'<<'\n'<<'\n';
+                cout<<"n u m e ~~~> ";
+                string nume;
+                cin>>nume;
+                system("cls");
+                //verific daca am in sistem numele citit la tastatura drept sef de sala
+                int gasit=-1;
+                for(auto sala=sali.begin(); sala<=sali.end(); sala++)
+                {
+                    int indice=distance(sali.begin(),sala);
+                    if(nume==sala->getSefSala())
+                    {
+                        gasit=indice;
+                        break;
+                    }
+                }
+                //daca gasesc numele printre sefii de sali din atelier atunci pot opera asupra produselor din atelier
+                if(gasit!=-1 && gasit<sali.size())
+                {
+                    SalaAtelier& sala=sali[gasit].getSala(sali, gasit);
+                    cout<<"~~>Buna ziua, "<<sala.getSefSala()<<"! Aveti dreptul sa operati asupra produselor din atelierul de lucru manual. Va rugam sa alegeti urmatoarea operatiune."<<'\n';
+                    cout<<"~~>Pentru a adauga un nou produs, apasati tasta 1."<<'\n';
+                    cout<<"~~>Pentru a sterge un produs din atelierul de lucru manual, apasati tasta 2."<<'\n';
+                    cout<<"~~>Pentru modificarea datelor despre un produs din atelierul de lucru manual, apasati tasta 3."<<'\n';
+                    cout<<"~~>Pentru afisarea tuturor produselor din atelierul de lucru manual, apasati tasta 4."<<'\n';
+                    cin>>tasta;
+                    while(tasta!=9)
+                    {
+                        switch(tasta)
+                        {
+                            case 1:
+                            {
+                                system("cls");
+                                cout<<"~~>Ce produs ati dori sa adaugati? Apasati tasta corespunzatoare produsului pe care doriti sa il introduceti: \n\n";
+                                cout<<"<1>pictura\n<2>produs din lemn\n<3>tablou pictat pe lemn\n\n";
+                                cout<<"~~>Tasta dumneavoastra: ";
+                                cin>>tasta;
+                                system("cls");
+
+                                if(tasta==1)
+                                {
+                                    ProdusLucratManual* produsNou= new Pictura;
+                                    cin>>*produsNou;
+                                    produse.push_back(produsNou);
+                                    cout<<"\n\n~~>O noua pictura a fost adaugata cu succes!\n";
+                                    cout<<"~~>Daca doriti sa efectuati o alta operatiune asupra produselor din cadrul atelierului de lucru manual, apasati tasta 0.\n~~>Altfel, apasati tasta 9.\n";
+                                    cin>>tasta;
+                                }
+                                else if(tasta==2)
+                                {
+                                    ProdusLucratManual* produsNou= new ProdusDinLemn;
+                                    cin>>*produsNou;
+                                    produse.push_back(produsNou);
+                                    cout<<"\n\n~~>Un nou produs din lemn a fost adaugat cu succes!\n";
+                                    cout<<"~~>Daca doriti sa efectuati o alta operatiune asupra produselor din cadrul atelierului de lucru manual, apasati tasta 0.\n~~>Altfel, apasati tasta 9.\n";
+                                    cin>>tasta;
+                                }
+                                else if(tasta==3)
+                                {
+                                    ProdusLucratManual* produsNou= new TablouPictatPeLemn;
+                                    cin>>*produsNou;
+                                    produse.push_back(produsNou);
+                                    cout<<"\n\n~~>Un nou tablou pictat pe lemn a fost adaugat cu succes!\n";
+                                    cout<<"~~>Daca doriti sa efectuati o alta operatiune asupra produselor din cadrul atelierului de lucru manual, apasati tasta 0.\n~~>Altfel, apasati tasta 9.\n";
+                                    cin>>tasta;
+                                }
+                                else
+                                {
+                                    cout<<"ERR _-_-_-_ Tasta selectata este incorecta!\n";
+                                    return 0;
+                                }
+                                break;
+                            }
+                            case 2:
+                            {
+                                system("cls");
+                                int index;
+                                cout<<"~~>Lista de produse:\n";
+                                for(auto i=0; i<produse.size(); i++)
+                                    cout<<"Index: "<<i<<" | Nume: "<<produse[i]->getDenumireProdus()<<"\n";
+
+                                cout<<"\n~~>Introduceti numarul produsului pe care doriti sa il stergeti din atelierul de lucru manual: ";
+                                cin>>index;
+                                if(index>=0 && index<produse.size())
+                                {
+                                    produse.erase(produse.begin()+index);
+                                    cout<<"\n\n~~>Produsul selectat de dumneavoastra a fost sters cu succes!\n\n";
+                                    cout<<"~~>Daca doriti sa efectuati o alta operatiune asupra produselor din cadrul atelierului de lucru manual, apasati tasta 0.\n~~>Altfel, apasati tasta 9.\n";
+                                    cin>>tasta;
+                                }
+                                else
+                                {
+                                    cout<<"ERR _-_-_-_ Indexul introdus este invalid!\n";
+                                    return 0;
+                                }
+                                break;
+                            }
+                            case 3:
+                            {
+                                system("cls");
+                                int index;
+                                cout<<"~~>Lista de produse:\n";
+                                for(auto i=0; i<produse.size(); i++)
+                                    cout<<"Index: "<<i<<" | Nume: "<< produse[i]->getDenumireProdus()<<"\n";
+
+                                cout<<"\n~~>Introduceti numarul produsului pe care doriti sa il modificati in cadrul atelierului de lucru manual: ";
+                                cin>>index;
+                                if(index>=0 && index<produse.size())
+                                {
+                                    if(typeid(Pictura)==typeid((*produse[index]))) //daca obiectul selectat este de tip Pictura
+                                    {
+                                        system("cls");
+                                        Pictura* pictura=dynamic_cast<Pictura*>(produse[index]);
+                                        cout<<"~~>Obiectul selectat este o pictura! Ce doriti sa modificati la aceasta?\n";
+                                        cout<<"~~>In functie de ce doriti sa faceti asupra produsului selectat, apasati tasta corespunzatoare: \n\n";
+                                        cout<<"<1>actualizeaza pretul produsului\n<2>adauga un material din care a fost confectionat produsul\n<3>modifica denumirea produsului\n<4>verifica stocul produsului\n<5>calculeaza profitul aproximativ\n\n";
+                                        cout<<"~~>Tasta dumneavoastra: ";
+                                        cin>>tasta;
+
+                                        while(tasta!=9)
+                                        {
+                                            switch(tasta)
+                                            {
+                                                case 1:
+                                                {
+                                                    system("cls");
+                                                    float inlocuieste;
+                                                    cout<<"~~>Introduceti noul pret al produsului: ";
+                                                    cin>>inlocuieste;
+                                                    pictura->actualizeazaPret(inlocuieste);
+                                                    cout<<"~~>Pretul produsului a fost actualizat! Acestea sunt informatiile actualizate despre produsul curent: \n\n";
+                                                    cout<<*pictura<<"\n\n";
+                                                    cout<<"~~>Daca doriti sa efectuati o alta operatiune asupra acestui produs, apasati tasta 0.\n~~>Altfel, apasati tasta 9.\n";
+                                                    cin>>tasta;
+                                                    break;
+                                                }
+                                                case 2:
+                                                {
+                                                    system("cls");
+                                                    string inlocuieste;
+                                                    cout<<"~~>Introduceti materialul pe care vreti sa il adaugati, din care a fost realizat produsul: ";
+                                                    cin>>inlocuieste;
+                                                    *pictura=*pictura+inlocuieste; //utilizare operator +
+                                                    cout<<"Materialul a fost adaugat. Acestea sunt informatiile actualizate despre produsul curent: \n\n";
+                                                    cout<<*pictura<<"\n\n";
+                                                    cout<<"~~>Daca doriti sa efectuati o alta operatiune asupra acestui produs, apasati tasta 0.\n~~>Altfel, apasati tasta 9.\n";
+                                                    cin>>tasta;
+                                                    break;
+                                                }
+                                                case 3:
+                                                {
+                                                    system("cls");
+                                                    string inlocuieste;
+                                                    cout<<"~~>Introduceti noua denumire a produsului: ";
+                                                    cin>>inlocuieste;
+                                                    pictura->setDenumireProdus(inlocuieste);
+                                                    cout<<"Denumirea produsului a fost actualizata. Acestea sunt informatiile actualizate despre produsul curent: \n\n";
+                                                    cout<<*pictura<<"\n\n";
+                                                    cout<<"~~>Daca doriti sa efectuati o alta operatiune asupra acestui produs, apasati tasta 0.\n~~>Altfel, apasati tasta 9.\n";
+                                                    cin>>tasta;
+                                                    break;
+                                                }
+                                                case 4:
+                                                {
+                                                    system("cls");
+                                                    cout<<"Stocul produsului selectat este: "<<pictura->verificaStocProdus()<<"\n\n";
+                                                    cout<<"~~>Daca doriti sa efectuati o alta operatiune asupra acestui produs, apasati tasta 0.\n~~>Altfel, apasati tasta 9.\n";
+                                                    cin>>tasta;
+                                                    break;
+                                                }
+                                                case 5:
+                                                {
+                                                    system("cls");
+                                                    cout<<"Profitul aproximativ adus de produsul selectat este: "<<pictura->calculeazaProfitAproximativ()<<"\n\n";
+                                                    cout<<"~~>Daca doriti sa efectuati o alta operatiune asupra acestui produs, apasati tasta 0.\n~~>Altfel, apasati tasta 9.\n";
+                                                    cin>>tasta;
+                                                    break;
+                                                }
+                                                case 0:
+                                                {
+                                                    system("cls");
+                                                    cout<<"~~>Obiectul selectat este o pictura! Ce doriti sa modificati la aceasta?\n";
+                                                    cout<<"~~>In functie de ce doriti sa faceti asupra produsului selectat, apasati tasta corespunzatoare: \n\n";
+                                                    cout<<"<1>actualizeaza pretul produsului\n<2>adauga un material din care a fost confectionat produsul\n<3>modifica denumirea produsului\n<4>verifica stocul produsului\n<5>calculeaza profitul aproximativ\n\n";
+                                                    cout<<"~~>Tasta dumneavoastra: ";
+                                                    cin>>tasta;
+                                                    break;
+                                                }
+                                                default:
+                                                {
+                                                    tasta=9;
+                                                    break;
+                                                }
+                                            }
+                                        }
+
+                                    }
+                                    else if(typeid(ProdusDinLemn)==typeid((*produse[index]))) //obiectul selectat este de tip ProdusDinLemn
+                                    {
+                                        system("cls");
+                                        ProdusDinLemn* produsLemn=dynamic_cast<ProdusDinLemn*>(produse[index]);
+                                        cout<<"~~>Obiectul selectat este un produs din lemn! Ce doriti sa modificati la acesta?\n";
+                                        cout<<"~~>In functie de ce doriti sa faceti asupra produsului selectat, apasati tasta corespunzatoare: \n\n";
+                                        cout<<"<1>actualizeaza pretul produsului\n<2>adauga un material din care a fost confectionat produsul\n<3>modifica denumirea produsului\n<4>verifica stocul produsului\n<5>calculeaza profitul aproximativ\n\n";
+                                        cout<<"~~>Tasta dumneavoastra: ";
+                                        cin>>tasta;
+
+                                        while(tasta!=9)
+                                        {
+                                            switch(tasta)
+                                            {
+                                                case 1:
+                                                {
+                                                    system("cls");
+                                                    float inlocuieste;
+                                                    cout<<"~~>Introduceti noul pret al produsului: ";
+                                                    cin>>inlocuieste;
+                                                    produsLemn->actualizeazaPret(inlocuieste);
+                                                    cout<<"~~>Pretul produsului a fost actualizat! Acestea sunt informatiile actualizate despre produsul curent: \n\n";
+                                                    cout<<*produsLemn<<"\n\n";
+                                                    cout<<"~~>Daca doriti sa efectuati o alta operatiune asupra acestui produs, apasati tasta 0.\n~~>Altfel, apasati tasta 9.\n";
+                                                    cin>>tasta;
+                                                    break;
+                                                }
+                                                case 2:
+                                                {
+                                                    system("cls");
+                                                    string inlocuieste;
+                                                    cout<<"~~>Introduceti materialul pe care vreti sa il adaugati, din care a fost realizat produsul: ";
+                                                    cin>>inlocuieste;
+                                                    *produsLemn=*produsLemn+inlocuieste; //utilizare operator +
+                                                    cout<<"Materialul a fost adaugat. Acestea sunt informatiile actualizate despre produsul curent: \n\n";
+                                                    cout<<*produsLemn<<"\n\n";
+                                                    cout<<"~~>Daca doriti sa efectuati o alta operatiune asupra acestui produs, apasati tasta 0.\n~~>Altfel, apasati tasta 9.\n";
+                                                    cin>>tasta;
+                                                    break;
+                                                }
+                                                case 3:
+                                                {
+                                                    system("cls");
+                                                    string inlocuieste;
+                                                    cout<<"~~>Introduceti noua denumire a produsului: ";
+                                                    cin>>inlocuieste;
+                                                    produsLemn->setDenumireProdus(inlocuieste);
+                                                    cout<<"Denumirea produsului a fost actualizata. Acestea sunt informatiile actualizate despre produsul curent: \n\n";
+                                                    cout<<*produsLemn<<"\n\n";
+                                                    cout<<"~~>Daca doriti sa efectuati o alta operatiune asupra acestui produs, apasati tasta 0.\n~~>Altfel, apasati tasta 9.\n";
+                                                    cin>>tasta;
+                                                    break;
+                                                }
+                                                case 4:
+                                                {
+                                                    system("cls");
+                                                    cout<<"Stocul produsului selectat este: "<<produsLemn->verificaStocProdus()<<"\n\n";
+                                                    cout<<"~~>Daca doriti sa efectuati o alta operatiune asupra acestui produs, apasati tasta 0.\n~~>Altfel, apasati tasta 9.\n";
+                                                    cin>>tasta;
+                                                    break;
+                                                }
+                                                case 5:
+                                                {
+                                                    system("cls");
+                                                    cout<<"Profitul aproximativ adus de produsul selectat este: "<<produsLemn->calculeazaProfitAproximativ()<<"\n\n";
+                                                    cout<<"~~>Daca doriti sa efectuati o alta operatiune asupra acestui produs, apasati tasta 0.\n~~>Altfel, apasati tasta 9.\n";
+                                                    cin>>tasta;
+                                                    break;
+                                                }
+                                                case 0:
+                                                {
+                                                    system("cls");
+                                                    cout<<"~~>Obiectul selectat este un produs din lemn! Ce doriti sa modificati la acesta?\n";
+                                                    cout<<"~~>In functie de ce doriti sa faceti asupra produsului selectat, apasati tasta corespunzatoare: \n\n";
+                                                    cout<<"<1>actualizeaza pretul produsului\n<2>adauga un material din care a fost confectionat produsul\n<3>modifica denumirea produsului\n<4>verifica stocul produsului\n<5>calculeaza profitul aproximativ\n\n";
+                                                    cout<<"~~>Tasta dumneavoastra: ";
+                                                    cin>>tasta;
+                                                    break;
+                                                }
+                                                default:
+                                                {
+                                                    tasta=9;
+                                                    break;
+                                                }
+                                            }
+                                        }
+                                    }
+                                    else //obiectul selectat este de tip TablouPictatPeLemn
+                                    {
+                                        system("cls");
+                                        TablouPictatPeLemn* tablou = dynamic_cast<TablouPictatPeLemn*>(produse[index]);
+                                        cout<<"~~>Obiectul selectat este un tablou pictat pe lemn! Ce doriti sa modificati la acesta?\n";
+                                        cout<<"~~>In functie de ce doriti sa faceti asupra produsului selectat, apasati tasta corespunzatoare: \n\n";
+                                        cout<<"<1>actualizeaza pretul produsului\n<2>adauga un material din care a fost confectionat produsul\n<3>modifica denumirea produsului\n<4>verifica stocul produsului\n<5>calculeaza profitul aproximativ\n<6>afiseaza dimensiunile tabloului\n\n";
+                                        cout<<"~~>Tasta dumneavoastra: ";
+                                        cin>>tasta;
+
+                                        while(tasta!=9)
+                                        {
+                                            switch(tasta)
+                                            {
+                                                case 1:
+                                                {
+                                                    system("cls");
+                                                    float inlocuieste;
+                                                    cout<<"~~>Introduceti noul pret al produsului: ";
+                                                    cin>>inlocuieste;
+                                                    tablou->actualizeazaPret(inlocuieste);
+                                                    cout<<"~~>Pretul produsului a fost actualizat! Acestea sunt informatiile actualizate despre produsul curent: \n\n";
+                                                    cout<<*tablou<<"\n\n";
+                                                    cout<<"~~>Daca doriti sa efectuati o alta operatiune asupra acestui produs, apasati tasta 0.\n~~>Altfel, apasati tasta 9.\n";
+                                                    cin>>tasta;
+                                                    break;
+                                                }
+                                                case 2:
+                                                {
+                                                    system("cls");
+                                                    string inlocuieste;
+                                                    cout<<"~~>Introduceti materialul pe care vreti sa il adaugati, din care a fost realizat produsul: ";
+                                                    cin>>inlocuieste;
+                                                    *tablou=*tablou+inlocuieste; //utilizare operator +
+                                                    cout<<"Materialul a fost adaugat. Acestea sunt informatiile actualizate despre produsul curent: \n\n";
+                                                    cout<<*tablou<<"\n\n";
+                                                    cout<<"~~>Daca doriti sa efectuati o alta operatiune asupra acestui produs, apasati tasta 0.\n~~>Altfel, apasati tasta 9.\n";
+                                                    cin>>tasta;
+                                                    break;
+                                                }
+                                                case 3:
+                                                {
+                                                    system("cls");
+                                                    string inlocuieste;
+                                                    cout<<"~~>Introduceti noua denumire a produsului: ";
+                                                    cin>>inlocuieste;
+                                                    tablou->setDenumireProdus(inlocuieste);
+                                                    cout<<"Denumirea produsului a fost actualizata. Acestea sunt informatiile actualizate despre produsul curent: \n\n";
+                                                    cout<<*tablou<<"\n\n";
+                                                    cout<<"~~>Daca doriti sa efectuati o alta operatiune asupra acestui produs, apasati tasta 0.\n~~>Altfel, apasati tasta 9.\n";
+                                                    cin>>tasta;
+                                                    break;
+                                                }
+                                                case 4:
+                                                {
+                                                    system("cls");
+                                                    cout<<"Stocul produsului selectat este: "<<tablou->verificaStocProdus()<<"\n\n";
+                                                    cout<<"~~>Daca doriti sa efectuati o alta operatiune asupra acestui produs, apasati tasta 0.\n~~>Altfel, apasati tasta 9.\n";
+                                                    cin>>tasta;
+                                                    break;
+                                                }
+                                                case 5:
+                                                {
+                                                    system("cls");
+                                                    cout<<"Profitul aproximativ adus de produsul selectat este: "<<tablou->calculeazaProfitAproximativ()<<"\n\n";
+                                                    cout<<"~~>Daca doriti sa efectuati o alta operatiune asupra acestui produs, apasati tasta 0.\n~~>Altfel, apasati tasta 9.\n";
+                                                    cin>>tasta;
+                                                    break;
+                                                }
+                                                case 6:
+                                                {
+                                                    system("cls");
+                                                    cout<<"Dimensiunile produsului selectat sunt: "<<tablou->returneazaDimensiuniTablou()<<"\n\n";
+                                                    cout<<"~~>Daca doriti sa efectuati o alta operatiune asupra acestui produs, apasati tasta 0.\n~~>Altfel, apasati tasta 9.\n";
+                                                    cin>>tasta;
+                                                    break;
+                                                }
+                                                case 0:
+                                                {
+                                                    system("cls");
+                                                    cout<<"~~>Obiectul selectat este un tablou pictat pe lemn! Ce doriti sa modificati la acesta?\n";
+                                                    cout<<"~~>In functie de ce doriti sa faceti asupra produsului selectat, apasati tasta corespunzatoare: \n\n";
+                                                    cout<<"<1>actualizeaza pretul produsului\n<2>adauga un material din care a fost confectionat produsul\n<3>modifica denumirea produsului\n<4>verifica stocul produsului\n<5>calculeaza profitul aproximativ\n<6>afiseaza dimensiunile tabloului\n\n";
+                                                    cout<<"~~>Tasta dumneavoastra: ";
+                                                    cin>>tasta;
+                                                    break;
+                                                }
+                                                default:
+                                                {
+                                                    tasta=9;
+                                                    break;
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                                system("cls");
+                                cout<<"\n\n~~>Va multumim ca ati operat asupra produselor noastre!\n";
+                                break;
+                            }
+                            case 4:
+                            {
+                                system("cls");
+                                cout<<"~~>Cum doriti sa afisati produsele din atelier? Selectati tasta corespunzatoare: \n\n";
+                                cout<<"<1>afisarea exclusiva a produselor de tip Pictura\n<2>afisarea exclusiva a produselor de tip ProdusDinLemn\n<3>afisarea exclusiva a produselor de tip TablouPictatPeLemn\n<4>afisarea tuturor produselor din atelier\n";
+                                cout<<"\n~~>Tasta dumneavoastra: ";
+                                cin>>tasta;
+                                system("cls");
+                                if(tasta==1)
+                                {
+                                    cout<<"~~PRODUSE DE TIP PiCtUrA~~\n\n";
+                                    for(int i=0; i<produse.size(); i++)
+                                        if(typeid(Pictura)==typeid((*produse[i])))
+                                            cout<<dynamic_cast<Pictura&>(*produse[i])<<"\n\n";
+                                }
+                                else if(tasta==2)
+                                {
+                                    cout<<"~~PRODUSE DE TIP PrOdUsDiNlEmN~~\n\n";
+                                    for(int i=0; i<produse.size(); i++)
+                                        if(typeid(ProdusDinLemn)==typeid((*produse[i])))
+                                            cout<<dynamic_cast<ProdusDinLemn&>(*produse[i])<<"\n\n";
+                                }
+                                else if(tasta==3)
+                                {
+                                    cout<<"~~PRODUSE DE TIP TaBlOuPiCtAtPeLeMn~~\n\n";
+                                    for(int i=0; i<produse.size(); i++)
+                                        if(typeid(TablouPictatPeLemn)==typeid((*produse[i])))
+                                            cout<<dynamic_cast<TablouPictatPeLemn&>(*produse[i])<<"\n\n";
+                                }
+                                else if(tasta==4)
+                                {
+                                    cout<<"~~TOATE PRODUSELE~~\n\n";
+                                    for(int i=0; i<produse.size(); i++)
+                                        if(typeid(Pictura)==typeid((*produse[i])))
+                                            cout<<dynamic_cast<Pictura&>(*produse[i])<<"\n\n";
+                                        else if(typeid(ProdusDinLemn)==typeid((*produse[i])))
+                                            cout<<dynamic_cast<ProdusDinLemn&>(*produse[i])<<"\n\n";
+                                        else if(typeid(TablouPictatPeLemn)==typeid((*produse[i])))
+                                            cout<<dynamic_cast<TablouPictatPeLemn&>(*produse[i])<<"\n\n";
+                                }
+                                else
+                                {
+                                    cout<<"ERR _-_-_-_ Tasta selectata este incorecta!\n";
+                                    return 0;
+                                }
+                                cout<<"\n\n~~>Daca doriti sa efectuati o alta operatiune asupra produselor din cadrul atelierului de lucru manual, apasati tasta 0.\n~~>Altfel, apasati tasta 9.\n";
+                                cin>>tasta;
+                                break;
+                            }
+                            case 0:
+                            {
+                                system("cls");
+                                cout<<"~~>Pentru a adauga un nou produs, apasati tasta 1."<<'\n';
+                                cout<<"~~>Pentru a sterge un produs din atelierul de lucru manual, apasati tasta 2."<<'\n';
+                                cout<<"~~>Pentru modificarea datelor despre un produs din atelierul de lucru manual, apasati tasta 3."<<'\n';
+                                cout<<"~~>Pentru afisarea tuturor produselor din atelierul de lucru manual, apasati tasta 4."<<'\n';
+                                cin>>tasta;
+                                break;
+                            }
+                            default:
+                            {
+                                  tasta=9;
+                                  break;
+                            }
+                        }
+                    }
+                }
+                break;
+            }
+            case 3:
+            {
+                system("cls");
+                cout<<"                                  Ati selectat <<<<<RECENZII>>>>>                                  "<<'\n'<<'\n';
+                cout<<"~~>Daca doriti sa adaugati o recenzie, apasati tasta 1.\n";
+                cout<<"~~>Daca doriti sa vizualizati recenziile, apasati tasta 2.\n";
+
+                cin>>tasta;
+                while(tasta!=9)
+                {
+                    switch(tasta)
+                    {
+                        case 1:
+                        {
+                            system("cls");
+                            cin.get();
+                            string recenzieNoua;
+                            cout<<"~~>Introduceti recenzia: ";
+                            getline(cin,recenzieNoua);
+                            recenzii.push_back(recenzieNoua);
+                            cout<<"\n\n~~>Recenzia dumneavoastra a fost adaugata cu succes!\n";
+                            cout<<"\n\n~~>Daca doriti sa efectuati o alta operatiune, apasati tasta 0. Altfel, apasati tasta 9.\n";
+                            cin>>tasta;
+                            break;
+                        }
+                        case 2:
+                        {
+                            system("cls");
+                            cout<<"~~>Iata recenziile atelierului nostru de lucru manual: \n\n\n\n";
+                            for(auto i=0; i<recenzii.size(); i++)
+                                cout<<recenzii[i]<<"\n\n";
+                            cout<<"\n\n~~>Daca doriti sa efectuati o alta operatiune, apasati tasta 0. Altfel, apasati tasta 9.\n";
+                            cin>>tasta;
+                            break;
+                        }
+                        case 0:
+                        {
+                            system("cls");
+                            cout<<"~~>Daca doriti sa adaugati o recenzie, apasati tasta 1.\n";
+                            cout<<"~~>Daca doriti sa vizualizati recenziile, apasati tasta 2.\n";
+                            cin>>tasta;
+                            break;
+                        }
+                        default:
+                        {
+                            tasta=9;
+                            break;
+                        }
+                    }
+                }
+                system("cls");
+                cout<<"\n\n~~>Va multumim ca ne-ati vizitat!\n\n";
+                break;
+            }
+            case 4:
+            {
+                system("cls");
+                cout<<"                                  Ati selectat <<<<<OFERTE>>>>>                                  "<<'\n'<<'\n';
+                cout<<"OFERTA ZILEI DE LUNI~\nLa ORICE tablou pictat pe lemn cumparat, primiti un breloc realizat in sala noastra de traforaj, la alegere in limita stocului disponibil!\n\n";
+                cout<<"OFERTA ZILEI DE MARTI~\nLa cumparaturi in valoare de minim 100 de lei, primiti gratuit o pictura cu dimensiunile de 5X5cm!\n\n";
+                cout<<"OFERTA ZILEI DE MIERCURI~\nLa cumpararea oricarui tablou, primiti un al doilea gratuit! (cel gratuit este cel cu pretul mai mic)\n\n";
+                cout<<"OFERTA ZILEI DE JOI~\nCumparati o pictura si pe a doua o achizitionati cu 50% reducere!\n\n";
+                cout<<"OFERTA ZILEI DE VINERI~\nOrice pictura de 30X40cm la doar 34.99 lei!\n\n\n";
+
+                cout<<"NU RATATI OFERTELE NOASTRE!!! CUMPARA SI TU ACUM!!!\n\n";
+                cout<<"\n\n~~>Daca doriti sa efectuati o alta operatiune in cadrul atelierului de lucru manual, apasati tasta 0.\n~~>Pentru a iesi din meniu, apasati tasta 9.\n";
+                cin>>tasta;
+                break;
+            }
+            case 0:
+            {
+                system("cls");
+                cout<<"~~>Daca doriti sa operati asupra salilor atelierului nostru, apasati tasta 1."<<'\n';
+                cout<<"~~>Daca doriti sa operati asupra produselor din atelierul nostru, apasati tasta 2."<<'\n';
+                cout<<"~~>Daca doriti sa lasati o recenzie atelierului nostru, apasati tasta 3."<<'\n';
+                cout<<"~~>Daca doriti sa vizualizati ofertele din atelierul nostru, apasati tasta 4."<<'\n';
+                cin>>tasta;
+                system("cls");
+                break;
+            }
+            default:
+            {
+                tasta=9;
+                break;
+            }
+        }
+    }
+    return 0;
+}

@@ -1,0 +1,3071 @@
+#include <iostream>
+#include <cstring>
+#include <cstdlib>
+#include <vector>
+using namespace std;
+
+class Activitate;
+
+class SalaAtelier
+{
+    private:
+        string sefSala;
+        char* numeSala;
+        bool disponibilitateSala;
+        int numarLocuri;
+        int* locuriOcupate;
+        char zonaSala;
+        double costuriLunare;
+        float profitLunar;
+        static int contorID;
+        const int id;
+    public:
+        ///SETTERI SI GETTERI
+        //setter&getter sefSala -STRING
+        void setSefSala(string nume)
+        {
+            sefSala=nume;
+        }
+        string getSefSala()
+        {
+            return sefSala;
+        }
+
+        //setter&getter numeSala -CHAR*
+        void setNumeSala(char* numeSala)
+        {
+            if(this->numeSala!=NULL)
+                delete[] this->numeSala;
+            this->numeSala=new char[strlen(numeSala)+1];
+            strcpy(this->numeSala,numeSala);
+        }
+        const char* getNumeSala()
+        {
+            return numeSala;
+        }
+
+        //setter&getter disponibilitateSala -BOOL
+        void setDisponibilitateSala(bool disponibilitate)
+        {
+            disponibilitateSala=disponibilitate;
+        }
+        bool getDisponibilitateSala()
+        {
+            return disponibilitateSala;
+        }
+
+        //setter&getter numarLocuri -INT
+        void setNumarLocuri(int numarLocuri)
+        {
+            this->numarLocuri=numarLocuri;
+        }
+        int getNumarLocuri()
+        {
+            return numarLocuri;
+        }
+
+        //setter&getter locuriOcupate -INT*
+        void setLocuriOcupate(int nrLocuri)
+        {
+            if(this->locuriOcupate==NULL)
+                delete[] this->locuriOcupate;
+            this->locuriOcupate=new int[nrLocuri];
+            for(int i=0; i<nrLocuri; i++)
+                this->locuriOcupate[i]=locuriOcupate[i];
+        }
+        int* getLocuriOcupate()
+        {
+            return locuriOcupate;
+        }
+
+        //setter&getter zonaSala -CHAR
+        void setZonaSala(char zonaSala)
+        {
+            this->zonaSala=zonaSala;
+        }
+        char getZonaSala()
+        {
+            return zonaSala;
+        }
+
+        //setter&getter costuriLunare -DOUBLE
+        void setCosturiLunare(double costuriLunare)
+        {
+            this->costuriLunare=costuriLunare;
+        }
+        double getCosturiLunare()
+        {
+            return costuriLunare;
+        }
+
+        //setter&getter profitLunar -FLOAT
+        void setProfitLunar(float profit)
+        {
+            profitLunar=profit;
+        }
+        float getProfitLunar()
+        {
+            return profitLunar;
+        }
+
+        //setter si getter contorID -STATIC
+        void setContorID(int contorID)
+        {
+            this->contorID=contorID;
+        }
+        static int getContorID()
+        {
+            return contorID;
+        }
+
+        //getter id -CONST
+        const int getId()
+        {
+            return id;
+        }
+
+        ///CONSTRUCTORI
+        //constructorul fara parametrii
+        SalaAtelier();
+
+        //constructor cu un singur parametru pentru numele sefului de sala
+        SalaAtelier(string);
+
+        //constructor cu 2 parametrii pentru costuriVSprofit/sala
+        SalaAtelier(double, float);
+
+        //constructor cu 3 parametrii pentru disponibilitatea salii si locurile aferente
+        SalaAtelier(bool, int, int*);
+
+        //constructorul cu toti parametrii
+        SalaAtelier(string, char*, bool, int, int*, char, double, float);
+
+        //constructorul de copiere
+        SalaAtelier(const SalaAtelier&);
+
+        ///SUPRAINCARCAREA OPERATORILOR
+        //operatorul =
+        SalaAtelier& operator = (const SalaAtelier&);
+
+        //operatorul >>
+        friend istream& operator>>(istream& in, SalaAtelier& sala);//pentru citire
+
+        //operatorul <<
+        friend ostream& operator<<(ostream& out, const SalaAtelier& sala);//pentru afisare
+
+        //operatorul ++ PRE
+        SalaAtelier& operator ++ (); //pentru marirea numarului de locuri alocate unei sali
+
+        //operatorul ++ POST
+        SalaAtelier operator ++ (int); //pentru marirea numarului de locuri alocate unei sali
+
+        ///operatorii matematici
+        //operatorul +
+        //presupunem ca vrem sa evaluam seful de sala si vrem sa vedem nota obtinuta de acesta in urma evaluarii langa numele sau
+        SalaAtelier operator + (string evaluare);
+
+        //operatorul /
+        //presupunem ca vrem sa reducem profitul si costurile cu un anumit procent pe o anumita luna, in care angajatii au fost in concediu
+        SalaAtelier operator / (float procent);
+
+        //operatorul *
+        //presupunem ca vrem sa marim profitul si costurile cu un anumit procent pe o anumita luna, in care angajatii au lucrat in ture duble
+        SalaAtelier operator * (float procent);
+
+       ///operatorul de indexare []
+        int operator [] (int index)
+        {
+            if(index>=0 && index<this->numarLocuri)
+                return this->locuriOcupate[index];
+            else throw runtime_error("Index invalid");
+        }
+
+        ///operatorul cast
+        operator string() //implicit
+        {
+            return this->sefSala;
+        }
+        operator string()const //explicit
+        {
+            return this->sefSala;
+        }
+
+        ///operatorul conditional <
+        friend bool operator < (const SalaAtelier&, const SalaAtelier&);
+
+        ///operatorul pentru egalitate ==
+        friend bool operator == (const SalaAtelier&, const SalaAtelier&);
+
+        ///CITIRE DE LA TASTATURA SalaAtelier
+        void citireSala()
+        {
+            //sefAtelier
+            cout<<"Seful salii de atelier este: ";
+            cin>>this->sefSala;
+
+            //numeSala
+            char nume[100];
+            cout<<"Numele salii de atelier este: ";
+            cin.get();
+            cin.getline(nume, 100);
+            if(this->numeSala!=NULL)
+                delete[] numeSala;
+            this->numeSala=new char[strlen(nume)+1];
+            strcpy(this->numeSala, nume);
+
+            //disponibilitateSala
+            cout<<"Disponibilitatea salii de atelier este: ";
+            cin>>this->disponibilitateSala;
+
+            //numarLocuri
+            cout<<"Numarul de locuri dcin cadrul salii de atelier este: ";
+            cin>>this->numarLocuri;
+
+            //locuriOcupate
+            if(this->locuriOcupate!=NULL)
+                delete[] this->locuriOcupate;
+            this->locuriOcupate=new int[this->numarLocuri];
+            for(int i=0; i<this->numarLocuri; i++)
+            {
+                cout<<"Introduceti 0 daca locul "<<i<<" este liber, sau 1 altfel: ";
+                cin>>this->locuriOcupate[i];
+            }
+
+            //zonaSala
+            cout<<"Zona in care se afla sala de atelier este: ";
+            cin>>this->zonaSala;
+
+            //costuriLunare
+            cout<<"Costurile lunare percepute pentru sala de atelier sunt de: ";
+            cin>>this->costuriLunare;
+
+            //profitLunar
+            cout<<"Profitul lunar perceput pentru sala de atelier este de: ";
+            cin>>this->profitLunar;
+        }
+
+        ///AFISARE SalaAtelier - functionalitate1
+        void afisareSala()
+        {
+            //sefSala
+            cout<<"Seful salii de atelier este: "<<this->sefSala<<'\n';
+            //numeSala
+            cout<<"Numele salii de atelier este: "<<this->numeSala<<'\n';
+            //disponibilitateSala
+            if(this->disponibilitateSala==1)
+                cout<<"Disponibilitatea salii de atelier este: DISPONIBIL."<<'\n';
+            else
+                cout<<"Disponibilitatea salii de atelier este: INDISPONIBIL."<<'\n';
+            //numarLocuri
+            cout<<"Numarul de locuri din sala de atelier este de: "<<this->numarLocuri<<'\n';
+            //locuriOcupate
+            for(int i=0; i<this->numarLocuri; i++)
+                if(this->locuriOcupate[i]==0)
+                    cout<<"Locul "<<i<<" este disponibil."<<'\n';
+                else
+                    cout<<"Locul "<<i<<" nu este disponibil."<<'\n';
+            //zonaSala
+            cout<<"Zona in care se afla sala de atelier este: "<<this->zonaSala<<'\n';
+            //costuriLunare
+            cout<<"Costurile lunare percepute de sala de atelier sunt de: "<<this->costuriLunare<<'\n';
+            //profitLunar
+            cout<<"Profitul lunar perceput de sala de atelier este de: "<<this->profitLunar<<'\n';
+        }
+
+        ///OBTINERE SALA IN FUNCTIE DE INDEX - functionalitate2
+        SalaAtelier& getSala(vector<SalaAtelier>& sali, int index)
+        {
+            if(index>=0 && index<sali.size())
+                return sali[index];
+            else throw runtime_error("Index invalid!");
+        }
+
+        ///DESTRUCTOR
+        ~SalaAtelier()
+        {
+            if(this->numeSala!=NULL)
+                delete[] this->numeSala;
+            if(this->locuriOcupate!=NULL)
+                delete[] this->locuriOcupate;
+        }
+};
+
+///DECLARARE STATIC INT
+int SalaAtelier::contorID=0;
+
+///CONSTRUCTORI SalaAtelier
+//constructor fara parametrii
+SalaAtelier::SalaAtelier():id(contorID++)
+{
+    sefSala="Anonim";
+    numeSala=new char[strlen("Anonim")+1];
+    disponibilitateSala=false;
+    numarLocuri=0;
+    locuriOcupate=NULL;
+    zonaSala='X';
+    costuriLunare=0.0;
+    profitLunar=0.0;
+}
+//constructor cu un parametru pentru seful de sala
+SalaAtelier::SalaAtelier(string nume):id(contorID++)
+{
+    sefSala=nume;
+    //daca las asa, compilatorul nu a mai facut tot constructorul
+    //trebuie sa ,,suprascriu'' eu informatiile
+    numeSala=new char[strlen("Anonim")+1];
+    disponibilitateSala=false;
+    numarLocuri=0;
+    locuriOcupate=NULL;
+    zonaSala='X';
+    costuriLunare=0.0;
+    profitLunar=0.0;
+}
+//constructor cu 2 parametrii pentru costuriVSprofit/sala
+SalaAtelier::SalaAtelier(double costuriLunare, float profitLunar):id(contorID++), costuriLunare(costuriLunare), profitLunar(profitLunar)
+{
+    sefSala="Anonim";
+    numeSala=new char[strlen("Anonim")+1];
+    disponibilitateSala=false;
+    numarLocuri=0;
+    locuriOcupate=NULL;
+    zonaSala='X';
+}
+//constructor cu 3 parametrii pentru disponibilitatea salii si locurile aferente
+SalaAtelier::SalaAtelier(bool disponibilitateSala, int numarLocuri, int* locuriOcupate):id(contorID++), disponibilitateSala(disponibilitateSala), numarLocuri(numarLocuri)
+{
+    this->locuriOcupate=new int[numarLocuri];
+    for(int i=0; i<numarLocuri; i++)
+        this->locuriOcupate[i]=locuriOcupate[i];
+
+    sefSala="Anonim";
+    numeSala=new char[strlen("Anonim")+1];
+    zonaSala='X';
+    costuriLunare=0.0;
+    profitLunar=0.0;
+}
+//constructor cu toti parametrii
+SalaAtelier::SalaAtelier(string sefSala, char* numeSala, bool disponibilitateSala, int numarLocuri, int* locuriOcupate,
+                         char zonaSala, double costuriLunare, float profitLunar):id(contorID++), sefSala(sefSala), disponibilitateSala(disponibilitateSala),
+                         numarLocuri(numarLocuri), zonaSala(zonaSala), costuriLunare(costuriLunare), profitLunar(profitLunar)
+{
+    this->numeSala=new char[strlen(numeSala)+1];
+    strcpy(this->numeSala,numeSala);
+    this->locuriOcupate=new int[numarLocuri];
+    for(int i=0; i<numarLocuri; i++)
+        this->locuriOcupate[i]=locuriOcupate[i];
+}
+//constructorul de copiere
+SalaAtelier::SalaAtelier(const SalaAtelier& sala):id(contorID++)
+{
+    this->sefSala=sala.sefSala;
+    this->numeSala=new char[strlen(sala.numeSala)+1];
+    strcpy(this->numeSala,sala.numeSala);
+    this->disponibilitateSala=sala.disponibilitateSala;
+    this->numarLocuri=sala.numarLocuri;
+    this->locuriOcupate=new int[sala.numarLocuri];
+    for(int i=0; i<sala.numarLocuri; i++)
+        this->locuriOcupate[i]=sala.locuriOcupate[i];
+    this->zonaSala=sala.zonaSala;
+    this->costuriLunare=sala.costuriLunare;
+    this->profitLunar=sala.profitLunar;
+}
+
+///SUPRAINCARCARE OPERATORI SalaAtelier
+//operatorul =
+SalaAtelier& SalaAtelier :: operator = (const SalaAtelier& sala)
+{
+    if(this!=&sala)//luam in calcul cazul in care facem o atribuire de genul sala1=sala1
+    {
+        if(this->numeSala!=nullptr)
+            delete[] this->numeSala;
+        if(this->locuriOcupate!=nullptr)
+            delete[] this->locuriOcupate;
+
+        this->sefSala=sala.sefSala;
+        this->numeSala=new char[strlen(sala.numeSala)+1];
+        strcpy(this->numeSala,sala.numeSala);
+        this->disponibilitateSala=sala.disponibilitateSala;
+        this->numarLocuri=sala.numarLocuri;
+        this->locuriOcupate=new int[sala.numarLocuri];
+        for(int i=0; i<sala.numarLocuri; i++)
+            this->locuriOcupate[i]=sala.locuriOcupate[i];
+        this->zonaSala=sala.zonaSala;
+        this->costuriLunare=sala.costuriLunare;
+        this->profitLunar=sala.profitLunar;
+    }
+    return *this;
+}
+//operatorul >>
+istream& operator >> (istream& in, SalaAtelier& sala)
+{
+    //sefAtelier
+    cout<<"Seful salii de atelier este: ";
+    in>>sala.sefSala;
+
+    //numeSala
+    char nume[100];
+    cout<<"Numele salii de atelier este: ";
+    in.get();
+    in.getline(nume, 101);
+    if(sala.numeSala!=NULL)
+        delete[] sala.numeSala;
+    sala.numeSala=new char[strlen(nume)+1];
+    strcpy(sala.numeSala, nume);
+
+    //disponibilitateSala
+    cout<<"Disponibilitatea salii de atelier este: ";
+    in>>sala.disponibilitateSala;
+
+    //numarLocuri
+    cout<<"Numarul de locuri din cadrul salii de atelier este: ";
+    in>>sala.numarLocuri;
+
+    //locuriOcupate
+    if(sala.locuriOcupate!=NULL)
+        delete[] sala.locuriOcupate;
+    sala.locuriOcupate=new int[sala.numarLocuri];
+    for(int i=0; i<sala.numarLocuri; i++)
+    {
+        cout<<"Introduceti 0 daca locul "<<i<<" este liber, sau 1 altfel: ";
+        in>>sala.locuriOcupate[i];
+    }
+
+    //zonaSala
+    cout<<"Zona in care se afla sala de atelier este: ";
+    in>>sala.zonaSala;
+
+    //costuriLunare
+    cout<<"Costurile lunare percepute pentru sala de atelier sunt de: ";
+    in>>sala.costuriLunare;
+
+    //profitLunar
+    cout<<"Profitul lunar perceput pentru sala de atelier este de: ";
+    in>>sala.profitLunar;
+
+    return in;
+}
+
+//operatorul <<
+ostream& operator << (ostream& out, const SalaAtelier& sala)
+{
+    //sefSala
+    out<<"Seful salii de atelier este: "<<sala.sefSala<<'\n';
+    //numeSala
+    out<<"Numele salii de atelier este: "<<sala.numeSala<<'\n';
+    //disponibilitateSala
+    if(sala.disponibilitateSala==1)
+        out<<"Disponibilitatea salii de atelier este: DISPONIBIL."<<'\n';
+    else
+        out<<"Disponibilitatea salii de atelier este: INDISPONIBIL."<<'\n';
+    //numarLocuri
+    out<<"Numarul de locuri din sala de atelier este de: "<<sala.numarLocuri<<'\n';
+    //locuriOcupate
+    for(int i=0; i<sala.numarLocuri; i++)
+        if(sala.locuriOcupate[i]==0)
+            out<<"Locul "<<i<<" este disponibil."<<'\n';
+        else
+            out<<"Locul "<<i<<" nu este disponibil."<<'\n';
+    //zonaSala
+    out<<"Zona in care se afla sala de atelier este: "<<sala.zonaSala<<'\n';
+    //costuriLunare
+    out<<"Costurile lunare percepute de sala de atelier sunt de: "<<sala.costuriLunare<<'\n';
+    //profitLunar
+    out<<"Profitul lunar perceput de sala de atelier este de: "<<sala.profitLunar<<'\n';
+
+    return out;
+}
+//operatorul ++ PRE
+SalaAtelier& SalaAtelier :: operator ++ () //pentru marirea numarului de locuri alocate unei sali
+{
+    this->numarLocuri++;
+
+    int* vectorLocuri=new int[numarLocuri];
+    for(int i=0; i<numarLocuri-1; i++)
+        vectorLocuri[i]=this->locuriOcupate[i];
+    vectorLocuri[numarLocuri-1]=0;
+
+    if(this->locuriOcupate)
+        delete[] this->locuriOcupate;
+    this->locuriOcupate=vectorLocuri;
+
+    return *this;
+}
+//operatorul ++ POST
+SalaAtelier SalaAtelier :: operator ++ (int) //pentru marirea numarului de locuri alocate unei sali
+{
+    SalaAtelier copie=*this;
+
+    this->numarLocuri++;
+
+    int* vectorLocuri=new int[numarLocuri];
+    for(int i=0; i<numarLocuri-1; i++)
+        vectorLocuri[i]=this->locuriOcupate[i];
+    vectorLocuri[numarLocuri-1]=0;
+
+    if(this->locuriOcupate)
+        delete[] this->locuriOcupate;
+    this->locuriOcupate=vectorLocuri;
+
+    return copie;
+}
+//operatorul +
+//presupunem ca vrem sa evaluam seful de sala si vrem sa vedem nota obtinuta de acesta in urma evaluarii langa numele sau
+SalaAtelier SalaAtelier :: operator + (string evaluare)
+{
+    SalaAtelier copie=*this;
+    copie.sefSala=copie.sefSala+" "+evaluare;
+    return copie;
+}
+//operatorul /
+//presupunem ca vrem sa reducem profitul si costurile cu un anumit procent pe o anumita luna, in care angajatii au fost in concediu
+SalaAtelier SalaAtelier :: operator / (float procent)
+{
+    SalaAtelier copie=*this;
+    copie.profitLunar-=copie.profitLunar*procent;
+    copie.costuriLunare-=copie.costuriLunare*procent;
+    return copie;
+}
+//operatorul *
+//presupunem ca vrem sa marim profitul si costurile cu un anumit procent pe o anumita luna, in care angajatii au lucrat in ture duble
+SalaAtelier SalaAtelier :: operator * (float procent)
+{
+    SalaAtelier copie=*this;
+    copie.profitLunar+=copie.profitLunar*procent;
+    copie.costuriLunare+=copie.costuriLunare*procent;
+    return copie;
+}
+//operatorul <
+bool operator < (const SalaAtelier& sala1, const SalaAtelier& sala2)
+{
+    return sala1.profitLunar<sala2.profitLunar;
+}
+//operatorul ==
+bool operator == (const SalaAtelier& sala1, const SalaAtelier& sala2)
+{
+    return sala1.profitLunar==sala2.profitLunar;
+}
+
+
+class Produs
+{
+    private:
+        char* denumireProdus;
+        float pretProdus;
+        int stocProdus;
+        string producatorProdus;
+        string codBareProdus;
+        string materialProdus;
+        string categorieProdus;
+        double lungimeProdus;
+        double latimeProdus;
+        double inaltimeProdus;
+
+    public:
+        ///CONSTRUCTORI
+        //constructorul fara parametrii
+        Produs();
+
+        //constructor cu un singur parametru pentru producatorul produsului
+        Produs(string);
+
+        //constructor cu trei parametrii pentru dimensiunile produsului
+        Produs(double, double, double);
+
+        //constructor cu mai multi parametrii pentru specificatiile produsului
+        Produs(char*, string, string, string, double, double, double);
+
+        //constructorul cu toti parametrii
+        Produs(char*, float, int, string, string, string, string, double, double, double);
+
+        //constructorul de copiere
+        Produs(const Produs&);
+
+        ///SUPRAINCARCAREA OPERATORILOR
+        //operatorul =
+        Produs& operator = (const Produs& obiect);
+
+        //operatorul >>
+        friend istream& operator>>(istream& in, Produs& obiect);//pentru citire
+
+        //operatorul <<
+        friend ostream& operator<<(ostream& out, const Produs& obiect);//pentru afisare
+
+        //operatorul -- PRE
+        Produs& operator -- (); //pentru micsorarea numarului de produse in stoc
+
+        //operatorul -- POST
+        Produs operator -- (int); //pentru micsorarea numarului de produse in stoc
+
+        ///operatorii matematici
+        //operatorul +
+        //presupunem ca vrem sa mai adaugam un material din care este confectionat produsul
+        Produs operator + (string material);
+
+        //operatorul /
+        //presupunem ca pentru anumite produse exista mai multe categorii in care se incadreaza
+        Produs operator / (string categorie);
+
+        //operatorul *
+        //presupunem ca pentru un obiect avem mai mult de un producator
+        Produs operator * (Produs& obiect);
+
+        ///operatorul de indexare [] - accesarea elementelor clasei in ordinea data cu ajutorul indexului
+        string operator [] (int index)
+        {
+            switch(index)
+            {
+                case 1: return denumireProdus;
+                case 2: return producatorProdus;
+                case 3: return codBareProdus;
+                case 4: return materialProdus;
+                case 5: return categorieProdus;
+                case 6: return to_string(pretProdus);
+                case 7: return to_string(stocProdus);
+                case 8: return to_string(lungimeProdus);
+                case 9: return to_string(latimeProdus);
+                case 10: return to_string(inaltimeProdus);
+                default: throw runtime_error("Index invalid!");
+            }
+        }
+
+        ///operatorul cast
+        //implicit, pentru conversia unui produs intr-un string
+        operator string()
+        {
+            return "Produs: "+string(denumireProdus)+
+                   ", Producator: "+producatorProdus+
+                   ", Cod bare: "+codBareProdus+
+                   ", Pret: "+to_string(pretProdus)+
+                   ", Stoc: "+to_string(stocProdus)+
+                   ", Dimensiuni: "+to_string(lungimeProdus)+"x"+
+                                    to_string(latimeProdus)+"x"+
+                                    to_string(inaltimeProdus)+
+                   ", Material: "+materialProdus+
+                   ", Categorie: "+categorieProdus;
+        }
+        //explicit, pentru conversia unui produs intr-un string
+        operator string()const
+        {
+            return "Produs: "+string(denumireProdus)+
+                   ", Producator: "+producatorProdus+
+                   ", Cod bare: "+codBareProdus+
+                   ", Pret: "+to_string(pretProdus)+
+                   ", Stoc: "+to_string(stocProdus)+
+                   ", Dimensiuni: "+to_string(lungimeProdus)+"x"+
+                                    to_string(latimeProdus)+"x"+
+                                    to_string(inaltimeProdus)+
+                   ", Material: "+materialProdus+
+                   ", Categorie: "+categorieProdus;
+        }
+
+        ///operatorul conditional >
+        //presupunem ca vrem sa vedem daca un produs ar aduce mai multi bani decat un altul, daca am vinde toate produsele de pe stoc
+        friend bool operator > (const  Produs&, const Produs&);
+
+        ///operatorul de egalitate ==
+        //presupunem ca vrem sa vedem daca un produs are aceleasi dimensiuni cu un altul
+        friend bool operator == (const Produs&, const Produs&);
+
+        ///CITIRE DE LA TASTATURA Produs
+        void citireProdus()
+        {
+            //denumireProdus
+            char denumire[100];
+            cout<<"Denumirea produsului este: ";
+            cin.getline(denumire,100);
+            if(this->denumireProdus!=NULL)
+                delete[] this->denumireProdus;
+            this->denumireProdus=new char[strlen(denumire)+1];
+            strcpy(this->denumireProdus,denumire);
+
+            //pretProdus
+            cout<<"Pretul produsului este: ";
+            cin>>this->pretProdus;
+
+            //stocProdus
+            cout<<"Stocul produsului este: ";
+            cin>>this->stocProdus;
+
+            //producatorProdus
+            cout<<"Producatorul produsului este: ";
+            cin>>this->producatorProdus;
+
+            //codBareProdus
+            cout<<"Codul de bare al produsului este: ";
+            cin>>this->codBareProdus;
+
+            //materialProdus
+            cout<<"Materialul din care este confectionat produsul este: ";
+            cin>>this->materialProdus;
+
+            //categorieProdus
+            cout<<"Categoria din care face parte produsul este: ";
+            cin>>this->categorieProdus;
+
+            //lungimeProdus
+            cout<<"Lungimea produsului este: ";
+            cin>>this->lungimeProdus;
+
+            //latimeProdus
+            cout<<"Latimea produsului este: ";
+            cin>>this->latimeProdus;
+
+            //inaltimeProdus
+            cout<<"Inaltimea produsului este: ";
+            cin>>this->inaltimeProdus;
+        }
+
+        ///AFISARE Produs- functionalitate1
+        void afisareProdus()
+        {
+            //denumireProdus
+            cout<<"Denumirea produsului este: "<<this->denumireProdus<<'\n';
+
+            //pretProdus
+            cout<<"Pretul produsului este: "<<this->pretProdus<<'\n';
+
+            //stocProdus
+            cout<<"Stocul produsului este: "<<this->stocProdus<<'\n';
+
+            //producatorProdus
+            cout<<"Producatorul produsului este: "<<this->producatorProdus<<'\n';
+
+            //codBareProdus
+            cout<<"Codul de bare al produsului este: "<<this->codBareProdus<<'\n';
+
+            //materialProdus
+            cout<<"Materialul din care este confectionat produsul este: "<<this->materialProdus<<'\n';
+
+            //categorieProdus
+            cout<<"Categoria din care face parte produsul este: "<<this->categorieProdus<<'\n';
+
+            //lungimeProdus
+            cout<<"Lungimea produsului este: "<<this->lungimeProdus<<'\n';
+
+            //latimeProdus
+            cout<<"Latimea produsului este: "<<this->latimeProdus<<'\n';
+
+            //inaltimeProdus
+            cout<<"Inaltimea produsului este: "<<this->inaltimeProdus<<'\n';
+        }
+
+        ///ACTUALIZARE & AFISARE STOC PRODUS - functionalitate2
+        void actualizareStocProdus(int stoc)
+        {
+            this->stocProdus=stoc;
+            cout<<"Stocul produsului este: "<<this->stocProdus<<'\n';
+        }
+
+        ///ACTUALIZARE & AFISARE PRET PRODUS - functionalitate3
+        void actualizarePretProdus(float pret)
+        {
+            this->pretProdus=pret;
+            cout<<"Pretul produsului este: "<<this->pretProdus<<'\n';
+        }
+
+        ///DESTRUCTOR
+        ~Produs()
+        {
+            if(this->denumireProdus!=NULL)
+                delete[] this->denumireProdus;
+        }
+};
+
+///CONSTRUCTORI Produs
+//constructorul fara parametrii
+Produs :: Produs()
+{
+    denumireProdus=new char[strlen("Anonim")+1];
+    pretProdus=0.0;
+    stocProdus=0;
+    producatorProdus="Anonim";
+    codBareProdus="Anonim";
+    materialProdus="Anonim";
+    categorieProdus="Anonim";
+    lungimeProdus=0.0;
+    latimeProdus=0.0;
+    inaltimeProdus=0.0;
+}
+//constructor cu un singur parametru pentru producatorul produsului
+Produs :: Produs(string nume)
+{
+    producatorProdus=nume;
+
+    denumireProdus=new char[strlen("Anonim")+1];
+    pretProdus=0.0;
+    stocProdus=0;
+    codBareProdus="Anonim";
+    materialProdus="Anonim";
+    categorieProdus="Anonim";
+    lungimeProdus=0.0;
+    latimeProdus=0.0;
+    inaltimeProdus=0.0;
+}
+//constructor cu trei parametrii pentru dimensiunile produsului
+Produs :: Produs(double lungimeProdus, double latimeProdus, double inaltimeProdus):lungimeProdus(lungimeProdus), latimeProdus(latimeProdus), inaltimeProdus(inaltimeProdus)
+{
+    denumireProdus=new char[strlen("Anonim")+1];
+    pretProdus=0.0;
+    stocProdus=0;
+    producatorProdus="Anonim";
+    codBareProdus="Anonim";
+    materialProdus="Anonim";
+    categorieProdus="Anonim";
+}
+//constructor cu mai multi parametrii pentru specificatiile produsului
+Produs :: Produs(char* denumireProdus, string producatorProdus, string materialProdus, string categorieProdus, double lungimeProdus,
+                 double latimeProdus, double inaltimeProdus):producatorProdus(producatorProdus), materialProdus(materialProdus),
+                 categorieProdus(categorieProdus), lungimeProdus(lungimeProdus), latimeProdus(latimeProdus), inaltimeProdus(inaltimeProdus)
+{
+    this->denumireProdus=new char[strlen(denumireProdus)+1];
+    strcpy(this->denumireProdus,denumireProdus);
+
+    pretProdus=0.0;
+    stocProdus=0;
+    codBareProdus="Anonim";
+}
+//constructorul cu toti parametrii
+Produs :: Produs(char* denumireProdus, float pretProdus, int stocProdus, string producatorProdus, string codBareProdus, string materialProdus,
+                 string categorieProdus, double lungimeProdus, double latimeProdus, double inaltimeProdus):pretProdus(pretProdus),stocProdus(stocProdus),
+                 producatorProdus(producatorProdus), codBareProdus(codBareProdus), materialProdus(materialProdus), categorieProdus(categorieProdus),
+                 lungimeProdus(lungimeProdus), latimeProdus(latimeProdus), inaltimeProdus(inaltimeProdus)
+{
+    this->denumireProdus=new char[strlen(denumireProdus)+1];
+    strcpy(this->denumireProdus,denumireProdus);
+}
+//constructorul de copiere
+Produs :: Produs(const Produs& obiect)
+{
+    this->denumireProdus=new char[strlen(obiect.denumireProdus)+1];
+    strcpy(this->denumireProdus,obiect.denumireProdus);
+    this->pretProdus=obiect.pretProdus;
+    this->stocProdus=obiect.stocProdus;
+    this->producatorProdus=obiect.producatorProdus;
+    this->codBareProdus=obiect.codBareProdus;
+    this->materialProdus=obiect.materialProdus;
+    this->categorieProdus=obiect.categorieProdus;
+    this->lungimeProdus=obiect.lungimeProdus;
+    this->latimeProdus=obiect.latimeProdus;
+    this->inaltimeProdus=obiect.inaltimeProdus;
+}
+
+///SUPRAINCARCAREA OPERATORILOR Produs
+//operatorul =
+Produs& Produs :: operator = (const Produs& obiect)
+{
+    if(this!=&obiect)
+    {
+        if(this->denumireProdus!=NULL)
+            delete[] this->denumireProdus;
+        this->denumireProdus=new char[strlen(obiect.denumireProdus)+1];
+        strcpy(this->denumireProdus,obiect.denumireProdus);
+        this->pretProdus=obiect.pretProdus;
+        this->stocProdus=obiect.stocProdus;
+        this->producatorProdus=obiect.producatorProdus;
+        this->codBareProdus=obiect.codBareProdus;
+        this->materialProdus=obiect.materialProdus;
+        this->categorieProdus=obiect.categorieProdus;
+        this->lungimeProdus=obiect.lungimeProdus;
+        this->latimeProdus=obiect.latimeProdus;
+        this->inaltimeProdus=obiect.inaltimeProdus;
+    }
+    return *this;
+}
+//operatorul >>
+istream& operator >> (istream& in, Produs& obiect)
+{
+    //denumireProdus
+    char denumire[100];
+    cout<<"Denumirea produsului este: ";
+    in.getline(denumire,100);
+    if(obiect.denumireProdus!=NULL)
+        delete[] obiect.denumireProdus;
+    obiect.denumireProdus=new char[strlen(denumire)+1];
+    strcpy(obiect.denumireProdus,denumire);
+
+    //pretProdus
+    cout<<"Pretul produsului este: ";
+    in>>obiect.pretProdus;
+
+    //stocProdus
+    cout<<"Stocul produsului este: ";
+    in>>obiect.stocProdus;
+
+    //producatorProdus
+    cout<<"Producatorul produsului este: ";
+    in>>obiect.producatorProdus;
+
+    //codBareProdus
+    cout<<"Codul de bare al produsului este: ";
+    in>>obiect.codBareProdus;
+
+    //materialProdus
+    cout<<"Materialul din care este confectionat produsul este: ";
+    in>>obiect.materialProdus;
+
+    //categorieProdus
+    cout<<"Categoria din care face parte produsul este: ";
+    in>>obiect.categorieProdus;
+
+    //lungimeProdus
+    cout<<"Lungimea produsului este: ";
+    in>>obiect.lungimeProdus;
+
+    //latimeProdus
+    cout<<"Latimea produsului este: ";
+    in>>obiect.latimeProdus;
+
+    //inaltimeProdus
+    cout<<"Inaltimea produsului este: ";
+    in>>obiect.inaltimeProdus;
+
+    return in;
+}
+//operatorul <<
+ostream& operator << (ostream& out, const Produs& obiect)
+{
+    //denumireProdus
+    out<<"Denumirea produsului este: "<<obiect.denumireProdus<<'\n';
+
+    //pretProdus
+    out<<"Pretul produsului este: "<<obiect.pretProdus<<'\n';
+
+    //stocProdus
+    out<<"Stocul produsului este: "<<obiect.stocProdus<<'\n';
+
+    //producatorProdus
+    out<<"Producatorul produsului este: "<<obiect.producatorProdus<<'\n';
+
+    //codBareProdus
+    out<<"Codul de bare al produsului este: "<<obiect.codBareProdus<<'\n';
+
+    //materialProdus
+    out<<"Materialul din care este confectionat produsul este: "<<obiect.materialProdus<<'\n';
+
+    //categorieProdus
+    out<<"Categoria din care face parte produsul este: "<<obiect.categorieProdus<<'\n';
+
+    //lungimeProdus
+    out<<"Lungimea produsului este: "<<obiect.lungimeProdus<<'\n';
+
+    //latimeProdus
+    out<<"Latimea produsului este: "<<obiect.latimeProdus<<'\n';
+
+    //inaltimeProdus
+    out<<"Inaltimea produsului este: "<<obiect.inaltimeProdus<<'\n';
+
+    return out;
+}
+//operatorul -- PRE
+Produs& Produs :: operator -- () //pentru micsorarea numarului de produse in stoc
+{
+    this->stocProdus--;
+    return *this;
+}
+//operatorul -- POST
+Produs Produs :: operator -- (int) //pentru micsorarea numarului de produse in stoc
+{
+    Produs copie=*this;
+    this->stocProdus--;
+    return copie;
+}
+//operatorul +
+//presupunem ca vrem sa mai adaugam un material din care este confectionat produsul
+Produs Produs :: operator + (string material)
+{
+    Produs copie=*this;
+    copie.materialProdus=copie.materialProdus+"&"+material;
+    return copie;
+}
+//operatorul /
+//presupunem ca pentru anumite produse exista mai multe categorii in care se incadreaza
+Produs Produs :: operator / (string categorie)
+{
+    Produs copie=*this;
+    copie.categorieProdus=copie.categorieProdus+"&"+categorie;
+    return copie;
+}
+//operatorul *
+//presupunem ca pentru un obiect avem mai mult de un producator
+Produs Produs :: operator * (Produs& obiect)
+{
+    Produs copie=*this;
+    copie.producatorProdus=copie.producatorProdus+" si "+obiect.producatorProdus;
+    return copie;
+}
+//operatorul <
+//presupunem ca vrem sa vedem daca un produs ar aduce mai multi bani decat un altul, daca am vinde toate produsele de pe stoc
+bool operator > (const  Produs& produs1, const Produs& produs2)
+{
+    return produs1.pretProdus*produs1.stocProdus>produs2.pretProdus*produs2.stocProdus;
+}
+//operatorul ==
+//presupunem ca vrem sa vedem daca un produs are aceleasi dimensiuni cu un altul
+bool operator == (const Produs& produs1, const Produs& produs2)
+{
+    return produs1.inaltimeProdus==produs2.inaltimeProdus && (produs1.latimeProdus==produs2.latimeProdus && produs1.lungimeProdus==produs2.lungimeProdus);
+}
+
+
+class Angajat
+{
+    private:
+        char* numePrenumeAngajat;
+        int varstaAngajat;
+        string adresaAngajat;
+        string emailAngajat;
+        string numarTelefonAngajat;
+        string postAngajat; //sef de sala=reprezentant, secretara, vanzator, ingrijitor
+        double salariuAngajat;
+        string dataAngajariiAngajat;
+        bool perioadaNedeterminataAngajat; //pe perioada determinata sau nedeterminata
+        string dataFinalAngajat; //in cazul in care avem un angajat pe perioada determinata
+
+    public:
+        ///CONSTRUCTORI
+        //constructorul fara parametrii
+        Angajat();
+
+        //constructor cu un singur parametru pentru numele si prenumele angajatului
+        Angajat(char*);
+
+        //constructor cu doi parametrii pentru datele de contact ale angajatului
+        Angajat(string, string);
+
+        //constructor cu mai multi parametrii pentru extragerea datelor referitoare la locul de munca al angajatului
+        Angajat(string, double, string, bool, string);
+
+        //constructor cu toti parametrii
+        Angajat(char*, int, string, string, string, string, double, string, bool, string);
+
+        //constructorul de copiere
+        Angajat(const Angajat&);
+
+        ///SUPRAINCARCAREA OPERATORILOR
+        //operatorul =
+        Angajat& operator = (const Angajat&);
+
+        //operatorul >>
+        friend istream& operator>>(istream& in, Angajat& persoana);//pentru citire
+
+        //operatorul <<
+        friend ostream& operator<<(ostream& out, const Angajat& persoana);//pentru afisare
+
+        //operatorul -- PRE
+        Angajat& operator -- (); //pentru micsorarea salariului angajatului cu un procent de 15%(penalizare)
+
+        //operatorul -- POST
+        Angajat operator -- (int); //pentru micsorarea salariului angajatului cu un procent de 15%(penalizare)
+
+        ///operatorii matematici
+        //operatorul /
+        //presupunem ca avem nevoie de un angajat pentru un proiect special
+        //si avem de ales intre 2 angajati care sunt pe acelasi post(stim deja asta); selectam unul dintre ei dupa urmatoarele criterii, in ordine:
+        //salariu(il luam pe cel cu salariul mai mare), varsta(il luam pe cel mai tanar, pentru a-l ajuta sa capete experienta), tip contract
+        //daca nici in urma criteriilor nu se stabileste angajatul ales, il alegem pe al doilea
+        Angajat operator / (Angajat&);
+
+        //operatorul +
+        //presupunem ca vrem sa acordam un bonus la salariu daca angajatul are varsta sub 25 de ani si salariul sub 4000 de lei
+        Angajat operator + (double);
+
+        //operatorul -
+        //presupunem ca angajatul nu este competent si vrem sa ii schimbam contractul de pe perioada nedeterminata la o perioada determinata
+        //daca contractul este deja pe perioada determinata, atunci ii scadem un procent dat din salariu
+        Angajat operator - (int);
+
+        ///operatorul de indexare []
+        //pentru accesarea informațiilor angajatului bazat pe chei (nume si prenume, varsta, nr. telefon, salariu)
+        string operator[](const string& cheie)
+        {
+            if(cheie=="numePrenume")
+                return numePrenumeAngajat;
+            else if(cheie=="varsta")
+                return to_string(varstaAngajat);
+            else if(cheie=="numarTelefon")
+                return numarTelefonAngajat;
+            else if(cheie=="salariu")
+                return to_string(salariuAngajat);
+            else
+                throw runtime_error("Cheie invalida!");
+        }
+
+        ///operatorul cast
+        //implicit
+        operator string()
+        {
+            return "Angajatul "+string(numePrenumeAngajat)+" are salariul "+to_string(salariuAngajat);
+        }
+        //explicit
+        operator string()const
+        {
+            return "Angajatul "+string(numePrenumeAngajat)+" are salariul "+to_string(salariuAngajat);
+        }
+
+        ///operatorul conditional <=
+        friend bool operator <= (const Angajat&, const Angajat&);
+
+        ///operatorul de egalitate ==
+        friend bool operator == (const Angajat&, const Angajat&);
+
+        ///CITIRE DE LA TASTATURA Angajat
+        void citireAngajat()
+        {
+            //numePrenumeAngajat
+            char nume[100];
+            cout<<"Numele si prenumele angajatului este: ";
+            cin.get();
+            cin.getline(nume, 100);
+            if(this->numePrenumeAngajat!=NULL)
+                delete[] this->numePrenumeAngajat;
+            this->numePrenumeAngajat=new char[strlen(nume)+1];
+            strcpy(this->numePrenumeAngajat, nume);
+
+            //varstaAngajat;
+            cout<<"Varsta angajatului este: ";
+            cin>>this->varstaAngajat;
+
+            //adresaAngajat;
+            cout<<"Adresa angajatului este: ";
+            cin>>this->adresaAngajat;
+
+            //emailAngajat;
+            cout<<"Email-ul angajatului este: ";
+            cin>>this->emailAngajat;
+
+            //numarTelefonAngajat;
+            cout<<"Numarul de telefon al angajatului este: ";
+            cin>>this->numarTelefonAngajat;
+
+            //postAngajat;
+            cout<<"Postul ocupat de angajat este: ";
+            cin>>this->postAngajat;
+
+            //salariuAngajat;
+            cout<<"Salariul angajatului este: ";
+            cin>>this->salariuAngajat;
+
+            //dataAngajariiAngajat;
+            cout<<"Data angajarii este: ";
+            cin>>this->dataAngajariiAngajat;
+
+            //perioadaNedeterminataAngajat;
+            cout<<"Tipul contractului angajatului este: ";
+            cin>>this->perioadaNedeterminataAngajat;
+            if(this->perioadaNedeterminataAngajat==0)
+                cout<<"Contractul persoanei este pe perioada determinata.";
+            else
+                cout<<"Contractul persoanei este pe perioada nedeterminata.";
+
+            //dataFinalAngajat;
+            if(this->perioadaNedeterminataAngajat==1)
+                cout<<"Angajatul are contract pe perioada nedeterminata.";
+            else
+            {
+                cout<<"Data la care contractul pe perioada determinata a angajatului expira este: ";
+                cin>>this->dataFinalAngajat;
+            }
+        }
+
+        ///AFISARE Angajat - functionalitate1
+        void afisareAngajat()
+        {
+            //numePrenumeAngajat
+            cout<<"Numele si prenumele angajatului este: "<<this->numePrenumeAngajat<<'\n';
+
+            //varstaAngajat;
+            cout<<"Varsta angajatului este: "<<this->varstaAngajat<<'\n';
+
+            //adresaAngajat;
+            cout<<"Adresa angajatului este: "<<this->adresaAngajat<<'\n';
+
+            //emailAngajat;
+            cout<<"Email-ul angajatului este: "<<this->emailAngajat<<'\n';
+
+            //numarTelefonAngajat;
+            cout<<"Numarul de telefon al angajatului este: "<<this->numarTelefonAngajat<<'\n';
+
+            //postAngajat;
+            cout<<"Postul ocupat de angajat este: "<<this->postAngajat<<'\n';
+
+            //salariuAngajat;
+            cout<<"Salariul angajatului este: "<<this->salariuAngajat<<'\n';
+
+            //dataAngajariiAngajat;
+            cout<<"Data angajarii este: "<<this->dataAngajariiAngajat<<'\n';
+
+            //perioadaNedeterminataAngajat;
+            if(this->perioadaNedeterminataAngajat==false)
+                cout<<"Contractul persoanei este pe perioada determinata."<<'\n';
+
+            //dataFinalAngajat;
+            if(this->perioadaNedeterminataAngajat==false)
+                cout<<"Data la care contractul pe perioada determinata a angajatului expira este: "<<this->dataFinalAngajat<<'\n';
+            else
+                cout<<"Angajatul are contract pe perioada nedeterminata."<<'\n';
+       }
+
+        ///ACTUALIZARE & AFISARE DATE ANGAJAT - functionalitate2
+        void actualizareDateAngajat(string emailAngajat, string adresaAngajat, string numarTelefonAngajat)
+        {
+            this->emailAngajat=emailAngajat;
+            this->adresaAngajat=adresaAngajat;
+            this->numarTelefonAngajat=numarTelefonAngajat;
+
+            //emailAngajat;
+            cout<<"Email-ul angajatului este: "<<this->emailAngajat<<'\n';
+
+            //adresaAngajat;
+            cout<<"Adresa angajatului este: "<<this->adresaAngajat<<'\n';
+
+            //numarTelefonAngajat;
+            cout<<"Numarul de telefon al angajatului este: "<<this->numarTelefonAngajat<<'\n';
+        }
+
+        ///ACTUALIZARE & AFISARE TIP CONTRACT - functionalitate3
+        //daca contractul e pe perioada nedeterminata, nu schimbam nimic
+        //altfel, daca contractul e pe perioada determinata, schimbam data de final
+        void actualizareContractAngajat(string dataFinal)
+        {
+            if(this->perioadaNedeterminataAngajat==0)
+                this->dataFinalAngajat=dataFinal;
+
+            if(this->perioadaNedeterminataAngajat==0)
+                cout<<"Angajatul are contract pe perioada nedeterminata.";
+            else
+                cout<<"Data la care contractul pe perioada determinata a angajatului expira este: "<<this->dataFinalAngajat<<'\n';
+        }
+
+        ///DESTRUCTOR
+        ~Angajat()
+        {
+            if(this->numePrenumeAngajat!=NULL)
+                delete[] this->numePrenumeAngajat;
+        }
+
+};
+
+///CONSTRUCTORI Angajat
+//constructorul fara parametrii
+Angajat :: Angajat()
+{
+    numePrenumeAngajat=new char[strlen("Anonim"+1)];
+    varstaAngajat=0;
+    adresaAngajat="X";
+    emailAngajat="X";
+    numarTelefonAngajat="XXXXXXXXXX";
+    postAngajat="X";
+    salariuAngajat=0.0;
+    dataAngajariiAngajat="X";
+    perioadaNedeterminataAngajat=false;
+    dataFinalAngajat="X";
+}
+//constructor cu un singur parametru pentru numele si prenumele angajatului
+Angajat :: Angajat(char* numePrenumeAngajat)
+{
+    this->numePrenumeAngajat=new char[strlen(numePrenumeAngajat)+1];
+    strcpy(this->numePrenumeAngajat,numePrenumeAngajat);
+
+    varstaAngajat=0;
+    adresaAngajat="X";
+    emailAngajat="X";
+    numarTelefonAngajat="XXXXXXXXXX";
+    postAngajat="X";
+    salariuAngajat=0.0;
+    dataAngajariiAngajat="X";
+    perioadaNedeterminataAngajat=false;
+    dataFinalAngajat="X";
+}
+//constructor cu doi parametrii pentru datele de contact ale angajatului
+Angajat :: Angajat(string emailAngajat, string numarTelefonAngajat):emailAngajat(emailAngajat), numarTelefonAngajat(numarTelefonAngajat)
+{
+    numePrenumeAngajat=new char[strlen("Anonim"+1)];
+    varstaAngajat=0;
+    adresaAngajat="X";
+    postAngajat="X";
+    salariuAngajat=0.0;
+    dataAngajariiAngajat="X";
+    perioadaNedeterminataAngajat=false;
+    dataFinalAngajat="X";
+}
+//constructor cu mai multi parametrii pentru extragerea datelor referitoare la locul de munca al angajatului
+Angajat :: Angajat(string postAngajat, double salariuAngajat, string dataAngajariiAngajat, bool perioadaNedeterminataAngajat, string dataFinalAngajat):
+                    postAngajat(postAngajat), salariuAngajat(salariuAngajat), dataAngajariiAngajat(dataAngajariiAngajat),
+                    perioadaNedeterminataAngajat(perioadaNedeterminataAngajat), dataFinalAngajat(dataFinalAngajat)
+
+{
+    numePrenumeAngajat=new char[strlen("Anonim"+1)];
+    varstaAngajat=0;
+    adresaAngajat='X';
+    emailAngajat='X';
+    numarTelefonAngajat="XXXXXXXXXX";
+}
+//constructor cu toti parametrii
+Angajat :: Angajat(char* numePrenumeAngajat, int varstaAngajat, string adresaAngajat, string emailAngajat, string numarTelefonAngajat,
+                   string postAngajat, double salariuAngajat, string dataAngajariiAngajat, bool perioadaNedeterminataAngajat, string dataFinalAngajat):
+                       varstaAngajat(varstaAngajat), adresaAngajat(adresaAngajat), emailAngajat(emailAngajat), numarTelefonAngajat(numarTelefonAngajat),
+                       postAngajat(postAngajat), salariuAngajat(salariuAngajat), dataAngajariiAngajat(dataAngajariiAngajat),
+                       perioadaNedeterminataAngajat(perioadaNedeterminataAngajat), dataFinalAngajat(dataFinalAngajat)
+{
+    this->numePrenumeAngajat=new char[strlen(numePrenumeAngajat)+1];
+    strcpy(this->numePrenumeAngajat,numePrenumeAngajat);
+}
+//constructorul de copiere
+Angajat :: Angajat(const Angajat& persoana)
+{
+    this->numePrenumeAngajat=new char[strlen(persoana.numePrenumeAngajat)+1];
+    strcpy(this->numePrenumeAngajat,persoana.numePrenumeAngajat);
+    this->varstaAngajat=persoana.varstaAngajat;
+    this->adresaAngajat=persoana.adresaAngajat;
+    this->emailAngajat=persoana.emailAngajat;
+    this->numarTelefonAngajat=persoana.numarTelefonAngajat;
+    this->postAngajat=persoana.postAngajat;
+    this->salariuAngajat=persoana.salariuAngajat;
+    this->dataAngajariiAngajat=persoana.dataAngajariiAngajat;
+    this->perioadaNedeterminataAngajat=persoana.perioadaNedeterminataAngajat;
+    this->dataFinalAngajat=persoana.dataFinalAngajat;
+}
+
+///SUPRAINCARCAREA OPERATORILOR Angajat
+//operatorul =
+Angajat& Angajat :: operator = (const Angajat& persoana)
+{
+    if(this!=&persoana)
+    {
+        if(this->numePrenumeAngajat!=NULL)
+            delete[] this->numePrenumeAngajat;
+
+        this->numePrenumeAngajat=new char[strlen(persoana.numePrenumeAngajat)+1];
+        strcpy(this->numePrenumeAngajat,persoana.numePrenumeAngajat);
+        this->varstaAngajat=persoana.varstaAngajat;
+        this->adresaAngajat=persoana.adresaAngajat;
+        this->emailAngajat=persoana.emailAngajat;
+        this->numarTelefonAngajat=persoana.numarTelefonAngajat;
+        this->postAngajat=persoana.postAngajat;
+        this->salariuAngajat=persoana.salariuAngajat;
+        this->dataAngajariiAngajat=persoana.dataAngajariiAngajat;
+        this->perioadaNedeterminataAngajat=persoana.perioadaNedeterminataAngajat;
+        this->dataFinalAngajat=persoana.dataFinalAngajat;
+    }
+    return *this;
+}
+//operatorul >>
+istream& operator >> (istream& in, Angajat& persoana)
+{
+    //numePrenumeAngajat
+    char nume[100];
+    cout<<"Numele si prenumele angajatului este: ";
+    in.get();
+    in.getline(nume, 100);
+    if(persoana.numePrenumeAngajat!=NULL)
+        delete[] persoana.numePrenumeAngajat;
+    persoana.numePrenumeAngajat=new char[strlen(nume)+1];
+    strcpy(persoana.numePrenumeAngajat, nume);
+
+    //varstaAngajat;
+    cout<<"Varsta angajatului este: ";
+    in>>persoana.varstaAngajat;
+
+    //adresaAngajat;
+    cout<<"Adresa angajatului este: ";
+    in>>persoana.adresaAngajat;
+
+    //emailAngajat;
+    cout<<"Email-ul angajatului este: ";
+    in>>persoana.emailAngajat;
+
+    //numarTelefonAngajat;
+    cout<<"Numarul de telefon al angajatului este: ";
+    in>>persoana.numarTelefonAngajat;
+
+    //postAngajat;
+    cout<<"Postul ocupat de angajat este: ";
+    in>>persoana.postAngajat;
+
+    //salariuAngajat;
+    cout<<"Salariul angajatului este: ";
+    in>>persoana.salariuAngajat;
+
+    //dataAngajariiAngajat;
+    cout<<"Data angajarii este: ";
+    in>>persoana.dataAngajariiAngajat;
+
+    //perioadaNedeterminataAngajat;
+    cout<<"Tipul contractului angajatului este: ";
+    in>>persoana.perioadaNedeterminataAngajat;
+    if(persoana.perioadaNedeterminataAngajat==0)
+        cout<<"Contractul persoanei este pe perioada determinata.";
+    else
+        cout<<"Contractul persoanei este pe perioada nedeterminata.";
+
+    //dataFinalAngajat;
+    if(persoana.perioadaNedeterminataAngajat==1)
+        cout<<"Angajatul are contract pe perioada nedeterminata.";
+    else
+    {
+        cout<<"Data la care contractul pe perioada determinata a angajatului expira este: ";
+        in>>persoana.dataFinalAngajat;
+    }
+    return in;
+}
+//operatorul <<
+ostream& operator << (ostream& out, const Angajat& persoana)
+{
+    //numePrenumeAngajat
+    out<<"Numele si prenumele angajatului este: "<<persoana.numePrenumeAngajat<<'\n';
+
+    //varstaAngajat;
+    out<<"Varsta angajatului este: "<<persoana.varstaAngajat<<'\n';
+
+    //adresaAngajat;
+    out<<"Adresa angajatului este: "<<persoana.adresaAngajat<<'\n';
+
+    //emailAngajat;
+    out<<"Email-ul angajatului este: "<<persoana.emailAngajat<<'\n';
+
+    //numarTelefonAngajat;
+    out<<"Numarul de telefon al angajatului este: "<<persoana.numarTelefonAngajat<<'\n';
+
+    //postAngajat;
+    out<<"Postul ocupat de angajat este: "<<persoana.postAngajat<<'\n';
+
+    //salariuAngajat;
+    out<<"Salariul angajatului este: "<<persoana.salariuAngajat<<'\n';
+
+    //dataAngajariiAngajat;
+    out<<"Data angajarii este: "<<persoana.dataAngajariiAngajat<<'\n';
+
+    //perioadaNedeterminataAngajat;
+    if(persoana.perioadaNedeterminataAngajat==false)
+        out<<"Contractul persoanei este pe perioada determinata."<<'\n';
+
+    //dataFinalAngajat;
+    if(persoana.perioadaNedeterminataAngajat==false)
+        out<<"Data la care contractul pe perioada determinata a angajatului expira este: "<<persoana.dataFinalAngajat<<'\n';
+    else
+        out<<"Angajatul are contract pe perioada nedeterminata."<<'\n';
+
+    return out;
+}
+//operatorul -- PRE
+Angajat& Angajat :: operator -- () //pentru micsorarea salariului angajatului cu un procent de 15%(penalizare)
+{
+    this->salariuAngajat-=this->salariuAngajat*0.15;
+    return *this;
+}
+//operatorul -- POST
+Angajat Angajat :: operator -- (int) //pentru micsorarea salariului angajatului cu un procent de 15%(penalizare)
+{
+    Angajat copie=*this;
+    this->salariuAngajat-=this->salariuAngajat*0.15;
+    return copie;
+}
+//operatorul /
+//presupunem ca avem nevoie de un angajat pentru un proiect special
+//si avem de ales intre 2 angajati care sunt pe acelasi post(stim deja asta); selectam unul dintre ei dupa urmatoarele criterii, in ordine:
+//salariu(il luam pe cel cu salariul mai mare), varsta(il luam pe cel mai tanar, pentru a-l ajuta sa capete experienta), tip contract
+//daca nici in urma criteriilor nu se stabileste angajatul ales, il alegem pe al doilea
+Angajat Angajat :: operator / (Angajat& persoana)
+{
+    Angajat copie=*this;
+
+    if(copie.salariuAngajat>persoana.salariuAngajat)
+        return copie;
+    else if(copie.salariuAngajat<persoana.salariuAngajat)
+        return persoana;
+    else
+    {
+        if(copie.varstaAngajat<persoana.varstaAngajat)
+            return copie;
+        else if(copie.varstaAngajat>persoana.varstaAngajat)
+            return persoana;
+        else
+        {
+            if(copie.perioadaNedeterminataAngajat>persoana.perioadaNedeterminataAngajat) //copie=nedeterminat, persoana=determinat
+                return copie;
+            else
+                return persoana;
+        }
+    }
+    return persoana;
+}
+//operatorul +
+//presupunem ca vrem sa acordam un bonus la salariu daca angajatul are varsta sub 25 de ani si salariul sub 4000 de lei
+Angajat Angajat :: operator + (double bonus)
+{
+    if(this->varstaAngajat<25 && this->salariuAngajat<4000)
+        this->salariuAngajat+=bonus;
+    return *this;
+}
+//operatorul -
+//presupunem ca angajatul nu este competent si vrem sa ii schimbam contractul de pe perioada nedeterminata la o perioada determinata
+//daca contractul este deja pe perioada determinata, atunci ii scadem un procent dat din salariu
+Angajat Angajat :: operator - (int procent)
+{
+    if(this->perioadaNedeterminataAngajat==1)
+    {
+        this->perioadaNedeterminataAngajat=0;
+        cout<<"Data finalizarii contractului devine: ";
+        cin>>this->dataFinalAngajat;
+    }
+
+    else
+        this->salariuAngajat-=(procent*1.0/100*1.0)*this->salariuAngajat;
+    return *this;
+}
+//operatorul <=
+//comparam doi angajati: daca angajatul are salariul mai mic sau egal decat un altul, iar el este mai in varsta decat cel de al doilea
+//il catalogam ca fiind mai putin competent
+bool operator <= (const Angajat& a1, const Angajat& a2)
+{
+    return a1.salariuAngajat<=a2.salariuAngajat && a1.varstaAngajat > a2.varstaAngajat;
+    //1 -> a1 e mai putin competent decat a2
+    //0 -> a1 e destul de competent
+}
+//operatorul ==
+bool operator == (const Angajat& a1, const Angajat& a2)
+{
+    return a1.salariuAngajat==a2.salariuAngajat;
+}
+
+
+class Activitate
+{
+    private:
+        char* denumireActivitate;
+        int durataActivitate; //in minute
+        string dataDesfasurareActivitate;
+        string ziSapatamanaDesfasurareActivitate;
+        char* salaDesfasurareActivitate;
+        string reprezentantActivitate;
+        int numarProduseRealizate;
+        bool activitateInDesfasurare;
+        int numarParticipantiActivitate;
+
+    public:
+        ///SETTERI SI GETTERI
+        //setter&getter denumireActivitate -CHAR*
+        void setDenumireActivitate(char* denumireActivitate)
+        {
+            if(this->denumireActivitate!=NULL)
+                delete[] this->denumireActivitate;
+            this->denumireActivitate=new char[strlen(denumireActivitate)+1];
+            strcpy(this->denumireActivitate,denumireActivitate);
+        }
+        const char* getDenumireActivitate()
+        {
+            return denumireActivitate;
+        }
+
+        //setter&getter durataActivitate -INT
+        void setDurataActivitate(int durataActivitate)
+        {
+            this->durataActivitate=durataActivitate;
+        }
+        int getDurataActivitate()
+        {
+            return durataActivitate;
+        }
+
+        //setter&getter dataDesfasurareActivitate -STRING
+        void setDataDesfasurareActivitate(string dataDesfasurareActivitate)
+        {
+            this->dataDesfasurareActivitate=dataDesfasurareActivitate;
+        }
+        string getDataDesfasurareActivitate()
+        {
+            return dataDesfasurareActivitate;
+        }
+
+        //setter&getter ziSaptamanaDesfasurareActivitate -STRING
+        void setZiSaptamanaDesfasurareActivitate(string ziSapatamanaDesfasurareActivitate)
+        {
+            this->ziSapatamanaDesfasurareActivitate=ziSapatamanaDesfasurareActivitate;
+        }
+        string getZiSaptamanaDesfasurareActivitate()
+        {
+            return ziSapatamanaDesfasurareActivitate;
+        }
+
+        //setter&getter salaDesfasurareActivitate -CHAR*
+        void setSalaDesfasurareActivitate(char* salaDesfasurareActivitate)
+        {
+            if(this->salaDesfasurareActivitate!=NULL)
+                delete[] this->salaDesfasurareActivitate;
+            this->salaDesfasurareActivitate=new char[strlen(salaDesfasurareActivitate)+1];
+            strcpy(this->salaDesfasurareActivitate,salaDesfasurareActivitate);
+        }
+        const char* getSalaDesfasurareActivitate()
+        {
+            return salaDesfasurareActivitate;
+        }
+
+        //setter&getter reprezentantActivitate -STRING
+        void setReprezentantActivitate(string reprezentantActivitate)
+        {
+            this->reprezentantActivitate=reprezentantActivitate;
+        }
+        string getReprezentantActivitate()
+        {
+            return reprezentantActivitate;
+        }
+
+        //setter&getter numarProduseRealizate -INT
+        void setNumarProduseRealizate(int numar)
+        {
+            numarProduseRealizate=numar;
+        }
+        int getNumarProduseRealizate()
+        {
+            return numarProduseRealizate;
+        }
+
+        //setter&getter activitateInDesfasurare -BOOL
+        void setActivitateInDesfasurare(bool activitateInDesfasurare)
+        {
+            this->activitateInDesfasurare=activitateInDesfasurare;
+        }
+        bool getActivitateInDesfasurare()
+        {
+            return activitateInDesfasurare;
+        }
+
+        //setter&getter numarParticipantiActivitate -INT
+        void setNumarParticipantiActivitate(int numar)
+        {
+            numarParticipantiActivitate=numar;
+        }
+        int getNumarParticipantiActivitate()
+        {
+            return numarParticipantiActivitate;
+        }
+
+        ///CONSTRUCTORI
+        //constructorul fara parametrii
+        Activitate();
+
+        //constructor cu un singur parametru pentru denumirea activitatii
+        Activitate(char* );
+
+        //constructor cu 3 parametrii pentru datele temporale despre desfasurarea activitatii
+        Activitate(int, string, string);
+
+        //constructor cu mai multi parametrii pentru datele organizatorice despre desfasurarea activitatii
+        Activitate(char*, char*, string);
+
+        //constructor cu toti parametrii
+        Activitate(char*, int, string, string, char*, string, int, bool, int);
+
+        //constructor de copiere
+        Activitate(const Activitate&);
+
+        ///SUPRAINCARCAREA OPERATORILOR
+        //operatorul =
+        Activitate& operator = (const Activitate&);
+
+        //operatorul >>
+        friend istream& operator>>(istream& in, Activitate& activitate);//pentru citire
+
+        //operatorul <<
+        friend ostream& operator<<(ostream& out, const Activitate& activitate);//pentru afisare
+
+        //operatorul ++ PRE
+        Activitate& operator ++ (); //pentru marirea duratei unei activitati cu o ora datorita maririi numarului de participanti cu 30% din numarul de participanti initiali
+
+        //operatorul ++ POST
+        Activitate operator ++ (int); //pentru marirea duratei unei activitati cu o ora datorita maririi numarului de participanti cu 30% din numarul de participanti initiali
+
+        //operatorul +
+        //presupunem ca vrem sa marim numarul de produse realizate cu un numar dat
+        Activitate operator + (int numar_extra);
+
+        //operatorul *
+        //presupunem ca vrem sa schimbam denumirea activitatii
+        Activitate operator * (const char* denumireNoua);
+
+        //operatorul /
+        //presupunem ca vrem sa afisam reprezentantul de sala care a realizat mai multe produse
+        //iar in cazul in care cei doi au realizat acelasi numar, returnam evenimentul cu reprezentantul a carui activitate a avut mai multi participanti
+        //daca si numarul de participanti e egal, atunci returnam oricare activitate dintre cele doua
+        Activitate operator / (Activitate& activitate);
+
+        ///operatorul de indexare []
+        auto operator [] (const string& cheie)
+        {
+            if(cheie=="denumire")
+                return string(denumireActivitate);
+            else if(cheie=="ziSaptamana")
+                return ziSapatamanaDesfasurareActivitate;
+            else if (cheie=="verificaZi")
+            {
+                string zi;
+                cout<<"Introduceti ziua pentru verificare: ";
+                cin>>zi;
+                cout<<'\n';
+                if(zi==ziSapatamanaDesfasurareActivitate)
+                    return "Activitatea are loc in ziua "+zi;
+                else
+                    return "Activitatea nu are loc in ziua "+zi;
+            }
+            else throw runtime_error("Cheie invalida!");
+        }
+
+        ///operatorul cast
+        //implicit
+        operator string()
+        {
+            return "Activitatea "+string(denumireActivitate)+" se desfasoara la data de "+
+                    dataDesfasurareActivitate+" in ziua "+ziSapatamanaDesfasurareActivitate;
+        }
+        //explicit
+        operator string()const
+        {
+            return "Activitatea "+string(denumireActivitate)+" se desfasoara la data de "+
+                    dataDesfasurareActivitate+" in ziua "+ziSapatamanaDesfasurareActivitate;
+        }
+
+        ///operatorul conditional >=
+        friend bool operator >= (const Activitate& act1, const Activitate& act2);
+
+        ///operatorul de egalitate ==
+        friend bool operator == (const Activitate& act1, const Activitate& act2);
+
+        ///CITIRE Activitate
+        void citireActivitate()
+        {
+            //denumireActivitate
+            char denumire[100];
+            cout<<"Denumirea activitatii este: ";
+            cin.get();
+            cin.getline(denumire, 100);
+            if(this->denumireActivitate!=NULL)
+                delete[] this->denumireActivitate;
+            this->denumireActivitate=new char[strlen(denumire)+1];
+            strcpy(this->denumireActivitate,denumire);
+
+            //durataActivitate
+            cout<<"Durata activitatii in minute este: ";
+            cin>>this->durataActivitate;
+
+            //dataDesfasurareActivitate
+            cout<<"Data la care se desfasoara activitatea este: ";
+            cin>>this->dataDesfasurareActivitate;
+
+            //ziSaptamanaDesfasurareActivitate
+            cout<<"Ziua din saptamana la care se desfasoara activitatea este: ";
+            cin>>this->ziSapatamanaDesfasurareActivitate;
+
+            //salaDesfasurareActivitate
+            char nume_sala[100];
+            cout<<"Denumirea salii in care se desfasoara activitatea este: ";
+            cin.get();
+            cin.getline(nume_sala,100);
+            if(this->salaDesfasurareActivitate!=NULL)
+                delete[] this->salaDesfasurareActivitate;
+            this->salaDesfasurareActivitate=new char[strlen(nume_sala)+1];
+            strcpy(this->salaDesfasurareActivitate,nume_sala);
+
+            //reprezentantActivitate
+            cout<<"Reprezentantul activitatii este: ";
+            cin>>this->reprezentantActivitate;
+
+            //numarProduseRealizate
+            cout<<"Numarul de produse realizate in cadrul activitatii este: ";
+            cin>>this->numarProduseRealizate;
+
+            //activitateInDesfasurare
+            cout<<"Statusul activitatii (in desfasurare sau nu) este: ";
+            cin>>this->activitateInDesfasurare;
+
+            //numarParticipantiActivitate
+            cout<<"Numarul de participanti la activitate este: ";
+            cin>>this->numarParticipantiActivitate;
+        }
+
+        ///AFISARE Activitate - functionalitate1
+        void afisareActivitate()
+        {
+            //denumireActivitate
+            cout<<"Denumirea activitatii este: "<<this->denumireActivitate<<'\n';
+
+            //durataActivitate
+            cout<<"Durata activitatii in minute este: "<<this->durataActivitate<<'\n';
+
+            //dataDesfasurareActivitate
+            cout<<"Data la care se desfasoara activitatea este: "<<this->dataDesfasurareActivitate<<'\n';
+
+            //ziSaptamanaDesfasurareActivitate
+            cout<<"Ziua din saptamana la care se desfasoara activitatea este: "<<this->ziSapatamanaDesfasurareActivitate<<'\n';
+
+            //salaDesfasurareActivitate
+            cout<<"Denumirea salii in care se desfasoara activitatea este: "<<this->salaDesfasurareActivitate<<'\n';
+
+            //reprezentantActivitate
+            cout<<"Reprezentantul activitatii este: "<<this->reprezentantActivitate<<'\n';
+
+            //numarProduseRealizate
+            cout<<"Numarul de produse realizate in cadrul activitatii este: "<<this->numarProduseRealizate<<'\n';
+
+            //activitateInDesfasurare
+            if(this->activitateInDesfasurare==1)
+                cout<<"Activitatea este in desfasurare."<<'\n';
+            else
+                cout<<"Activitatea nu este in desfasurare."<<'\n';
+
+            //numarParticipantiActivitate
+            cout<<"Numarul de participanti la activitate este: "<<this->numarParticipantiActivitate<<'\n';
+        }
+
+        ///ACTUALIZARE & AFISARE STATUS ACTIVITATE(e in desfasurare/nu e in desfasurare) - functionalitate2
+        void actualizareStatus(bool status)
+        {
+            this->activitateInDesfasurare=status;
+            if(this->activitateInDesfasurare==1)
+                cout<<"Activitatea este in desfasurare."<<'\n';
+            else
+                cout<<"Activitatea nu este in desfasurare."<<'\n';
+        }
+
+        ///MODIFICAREA DATEI, ZILEI SI A DURATEI ACTIVITATII SI AFISAREA DATELOR DESPRE ACTIVITATE CU CELE MENTIONATE MODIFICATE - functionalitate3
+        void modificareTemporala(string dataDesfasurareActivitate, string ziSapatamanaDesfasurareActivitate, int durataActivitate)
+        {
+            this->dataDesfasurareActivitate=dataDesfasurareActivitate;
+            this->ziSapatamanaDesfasurareActivitate=ziSapatamanaDesfasurareActivitate;
+            this->durataActivitate=durataActivitate;
+
+            //denumireActivitate
+            cout<<"Denumirea activitatii este: "<<this->denumireActivitate<<'\n';
+
+            //durataActivitate
+            cout<<"Durata activitatii in minute este: "<<this->durataActivitate<<'\n';
+
+            //dataDesfasurareActivitate
+            cout<<"Data la care se desfasoara activitatea este: "<<this->dataDesfasurareActivitate<<'\n';
+
+            //ziSaptamanaDesfasurareActivitate
+            cout<<"Ziua din saptamana la care se desfasoara activitatea este: "<<this->ziSapatamanaDesfasurareActivitate<<'\n';
+
+            //salaDesfasurareActivitate
+            cout<<"Denumirea salii in care se desfasoara activitatea este: "<<this->salaDesfasurareActivitate<<'\n';
+
+            //reprezentantActivitate
+            cout<<"Reprezentantul activitatii este: "<<this->reprezentantActivitate<<'\n';
+
+            //numarProduseRealizate
+            cout<<"Numarul de produse realizate in cadrul activitatii este: "<<this->numarProduseRealizate<<'\n';
+
+            //activitateInDesfasurare
+            if(this->activitateInDesfasurare==1)
+                cout<<"Activitatea este in desfasurare."<<'\n';
+            else
+                cout<<"Activitatea nu este in desfasurare."<<'\n';
+
+            //numarParticipantiActivitate
+            cout<<"Numarul de participanti la activitate este: "<<this->numarParticipantiActivitate<<'\n';
+        }
+        ///operatorul - intre SalaAtelier si Activitate
+        friend SalaAtelier operator - (SalaAtelier, Activitate);
+        friend SalaAtelier operator - (SalaAtelier, SalaAtelier);
+        friend SalaAtelier operator - (Activitate, SalaAtelier);
+        friend Activitate operator - (Activitate, Activitate);
+
+        ///DESTRUCTORUL
+        ~Activitate()
+        {
+            if(this->denumireActivitate!=NULL)
+                delete[] this->denumireActivitate;
+            if(this->salaDesfasurareActivitate!=NULL)
+                delete[] this->salaDesfasurareActivitate;
+        }
+};
+
+///CONSTRUCTORI Activitate
+//constructorul fara parametrii
+Activitate :: Activitate()
+{
+    denumireActivitate=new char[strlen("Anonim")+1];
+    durataActivitate=0; //in minute
+    dataDesfasurareActivitate="XX-XX-XXXX";
+    ziSapatamanaDesfasurareActivitate="X";
+    salaDesfasurareActivitate=new char[strlen("Anonim")+1];
+    reprezentantActivitate="Anonim";
+    numarProduseRealizate=0;
+    activitateInDesfasurare=false;
+    numarParticipantiActivitate=0;
+}
+//constructor cu un singur parametru pentru denumirea activitatii
+Activitate :: Activitate(char* denumireActivitate)
+{
+    this->denumireActivitate=new char[strlen(denumireActivitate)+1];
+    strcpy(this->denumireActivitate,denumireActivitate);
+
+    durataActivitate=0; //in minute
+    dataDesfasurareActivitate="XX-XX-XXXX";
+    ziSapatamanaDesfasurareActivitate="X";
+    salaDesfasurareActivitate=new char[strlen("Anonim")+1];
+    reprezentantActivitate="Anonim";
+    numarProduseRealizate=0;
+    activitateInDesfasurare=false;
+    numarParticipantiActivitate=0;
+}
+//constructor cu 3 parametrii pentru datele temporale despre desfasurarea activitatii
+Activitate :: Activitate(int durataActivitate, string dataDesfasurareActivitate, string ziSapatamanaDesfasurareActivitate):
+            durataActivitate(durataActivitate), dataDesfasurareActivitate(dataDesfasurareActivitate), ziSapatamanaDesfasurareActivitate(ziSapatamanaDesfasurareActivitate)
+{
+    denumireActivitate=new char[strlen("Anonim")+1];
+    salaDesfasurareActivitate=new char[strlen("Anonim")+1];
+    reprezentantActivitate="Anonim";
+    numarProduseRealizate=0;
+    activitateInDesfasurare=false;
+    numarParticipantiActivitate=0;
+}
+//constructor cu mai multi parametrii pentru datele organizatorice despre desfasurarea activitatii
+Activitate :: Activitate(char* denumireActivitate, char* salaDesfasurareActivitate, string reprezentantActivitate):reprezentantActivitate(reprezentantActivitate)
+{
+    this->denumireActivitate=new char[strlen(denumireActivitate)+1];
+    strcpy(this->denumireActivitate,denumireActivitate);
+    this->salaDesfasurareActivitate=new char[strlen(salaDesfasurareActivitate)+1];
+    strcpy(this->salaDesfasurareActivitate,salaDesfasurareActivitate);
+
+    durataActivitate=0; //in minute
+    dataDesfasurareActivitate="XX-XX-XXXX";
+    ziSapatamanaDesfasurareActivitate="X";
+    numarProduseRealizate=0;
+    activitateInDesfasurare=false;
+    numarParticipantiActivitate=0;
+}
+//constructor cu toti parametrii
+Activitate :: Activitate(char* denumireActivitate, int durataActivitate, string dataDesfasurareActivitate, string ziSapatamanaDesfasurareActivitate,
+                         char* salaDesfasurareActivitate, string reprezentantActivitate, int numarProduseRealizate, bool activitateInDesfasurare,
+                         int numarParticipantiActivitate):durataActivitate(durataActivitate), dataDesfasurareActivitate(dataDesfasurareActivitate),
+                         ziSapatamanaDesfasurareActivitate(ziSapatamanaDesfasurareActivitate), reprezentantActivitate(reprezentantActivitate), numarProduseRealizate(numarProduseRealizate),
+                         activitateInDesfasurare(activitateInDesfasurare), numarParticipantiActivitate(numarParticipantiActivitate)
+{
+    this->denumireActivitate=new char[strlen(denumireActivitate)+1];
+    strcpy(this->denumireActivitate,denumireActivitate);
+    this->salaDesfasurareActivitate=new char[strlen(salaDesfasurareActivitate)+1];
+    strcpy(this->salaDesfasurareActivitate,salaDesfasurareActivitate);
+}
+//constructor de copiere
+Activitate :: Activitate(const Activitate& activitate)
+{
+    this->denumireActivitate=new char[strlen(activitate.denumireActivitate)+1];
+    strcpy(this->denumireActivitate,activitate.denumireActivitate);
+    this->durataActivitate=activitate.durataActivitate;
+    this->dataDesfasurareActivitate=activitate.dataDesfasurareActivitate;
+    this->ziSapatamanaDesfasurareActivitate=activitate.ziSapatamanaDesfasurareActivitate;
+    this->salaDesfasurareActivitate=new char[strlen(activitate.salaDesfasurareActivitate)+1];
+    strcpy(this->salaDesfasurareActivitate,activitate.salaDesfasurareActivitate);
+    this->reprezentantActivitate=activitate.reprezentantActivitate;
+    this->numarProduseRealizate=activitate.numarProduseRealizate;
+    this->activitateInDesfasurare=activitate.activitateInDesfasurare;
+    this->numarParticipantiActivitate=activitate.numarParticipantiActivitate;
+}
+
+///SUPRAINCARCAREA OPERATORILOR Activitate
+//operatorul =
+Activitate& Activitate :: operator = (const Activitate& activitate)
+{
+    if(this!=&activitate)
+    {
+        if(this->denumireActivitate!=NULL)
+            delete[] this->denumireActivitate;
+        if(this->salaDesfasurareActivitate!=NULL)
+            delete[] this->salaDesfasurareActivitate;
+
+        this->denumireActivitate=new char[strlen(activitate.denumireActivitate)+1];
+        strcpy(this->denumireActivitate,activitate.denumireActivitate);
+        this->durataActivitate=activitate.durataActivitate;
+        this->dataDesfasurareActivitate=activitate.dataDesfasurareActivitate;
+        this->ziSapatamanaDesfasurareActivitate=activitate.ziSapatamanaDesfasurareActivitate;
+        this->salaDesfasurareActivitate=new char[strlen(activitate.salaDesfasurareActivitate)+1];
+        strcpy(this->salaDesfasurareActivitate,activitate.salaDesfasurareActivitate);
+        this->reprezentantActivitate=activitate.reprezentantActivitate;
+        this->numarProduseRealizate=activitate.numarProduseRealizate;
+        this->activitateInDesfasurare=activitate.activitateInDesfasurare;
+        this->numarParticipantiActivitate=activitate.numarParticipantiActivitate;
+    }
+    return *this;
+}
+//operatorul >>
+istream& operator >> (istream& in, Activitate& activitate)
+{
+    //denumireActivitate
+    char denumire[100];
+    cout<<"Denumirea activitatii este: ";
+    in.get();
+    in.getline(denumire, 100);
+    if(activitate.denumireActivitate!=NULL)
+        delete[] activitate.denumireActivitate;
+    activitate.denumireActivitate=new char[strlen(denumire)+1];
+    strcpy(activitate.denumireActivitate,denumire);
+
+    //durataActivitate
+    cout<<"Durata activitatii in minute este: ";
+    in>>activitate.durataActivitate;
+
+    //dataDesfasurareActivitate
+    cout<<"Data la care se desfasoara activitatea este: ";
+    in>>activitate.dataDesfasurareActivitate;
+
+    //ziSaptamanaDesfasurareActivitate
+    cout<<"Ziua din saptamana la care se desfasoara activitatea este: ";
+    in>>activitate.ziSapatamanaDesfasurareActivitate;
+
+    //salaDesfasurareActivitate
+    char nume_sala[100];
+    cout<<"Denumirea salii in care se desfasoara activitatea este: ";
+    in.get();
+    in.getline(nume_sala,100);
+    if(activitate.salaDesfasurareActivitate!=NULL)
+        delete[] activitate.salaDesfasurareActivitate;
+    activitate.salaDesfasurareActivitate=new char[strlen(nume_sala)+1];
+    strcpy(activitate.salaDesfasurareActivitate,nume_sala);
+
+    //reprezentantActivitate
+    cout<<"Reprezentantul activitatii este: ";
+    in>>activitate.reprezentantActivitate;
+
+    //numarProduseRealizate
+    cout<<"Numarul de produse realizate in cadrul activitatii este: ";
+    in>>activitate.numarProduseRealizate;
+
+    //activitateInDesfasurare
+    cout<<"Statusul activitatii (in desfasurare sau nu) este: ";
+    in>>activitate.activitateInDesfasurare;
+
+    //numarParticipantiActivitate
+    cout<<"Numarul de participanti la activitate este: ";
+    in>>activitate.numarParticipantiActivitate;
+
+    return in;
+}
+//operatorul <<
+ostream& operator << (ostream& out, const Activitate& activitate)
+{
+     //denumireActivitate
+    cout<<"Denumirea activitatii este: "<<activitate.denumireActivitate<<'\n';
+
+    //durataActivitate
+    cout<<"Durata activitatii in minute este: "<<activitate.durataActivitate<<'\n';
+
+    //dataDesfasurareActivitate
+    cout<<"Data la care se desfasoara activitatea este: "<<activitate.dataDesfasurareActivitate<<'\n';
+
+    //ziSaptamanaDesfasurareActivitate
+    cout<<"Ziua din saptamana la care se desfasoara activitatea este: "<<activitate.ziSapatamanaDesfasurareActivitate<<'\n';
+
+    //salaDesfasurareActivitate
+    cout<<"Denumirea salii in care se desfasoara activitatea este: "<<activitate.salaDesfasurareActivitate<<'\n';
+
+    //reprezentantActivitate
+    cout<<"Reprezentantul activitatii este: "<<activitate.reprezentantActivitate<<'\n';
+
+    //numarProduseRealizate
+    cout<<"Numarul de produse realizate in cadrul activitatii este: "<<activitate.numarProduseRealizate<<'\n';
+
+    //activitateInDesfasurare
+    if(activitate.activitateInDesfasurare==1)
+        cout<<"Activitatea este in desfasurare."<<'\n';
+    else
+        cout<<"Activitatea nu este in desfasurare."<<'\n';
+
+    //numarParticipantiActivitate
+    cout<<"Numarul de participanti la activitate este: "<<activitate.numarParticipantiActivitate<<'\n';
+
+    return out;
+}
+//operatorul ++ PRE
+Activitate& Activitate :: operator ++ () //pentru marirea duratei unei activitati cu o ora datorita maririi numarului de participanti cu 30% din numarul de participanti initiali
+{
+    this->numarParticipantiActivitate+=0.3*this->numarParticipantiActivitate;
+    this->durataActivitate+=60; //60 min=1h
+    return *this;
+}
+//operatorul ++ POST
+Activitate Activitate :: operator ++ (int) //pentru marirea duratei unei activitati cu o ora datorita maririi numarului de participanti cu 30% din numarul de participanti initiali
+{
+    Activitate copie=*this;
+    this->numarParticipantiActivitate+=0.3*this->numarParticipantiActivitate;
+    this->durataActivitate+=60; //60 min=1h
+    return copie;
+}
+//operatorul +
+//presupunem ca vrem sa marim numarul de produse realizate cu un numar dat
+Activitate Activitate :: operator + (int numar_extra)
+{
+    Activitate copie=*this;
+    copie.numarProduseRealizate+=numar_extra;
+    return copie;
+}
+//operatorul *
+//presupunem ca vrem sa schimbam denumirea activitatii
+Activitate Activitate :: operator * (const char* denumireNoua)
+{
+    Activitate copie=*this;
+    if(copie.denumireActivitate!=NULL)
+        delete[] copie.denumireActivitate;
+    copie.denumireActivitate=new char[strlen(denumireNoua)+1];
+    strcpy(copie.denumireActivitate, denumireNoua);
+    return copie;
+}
+//operatorul /
+//presupunem ca vrem sa afisam reprezentantul de sala care a realizat mai multe produse
+//iar in cazul in care cei doi au realizat acelasi numar, returnam evenimentul cu reprezentantul a carui activitate a avut mai multi participanti
+//daca si numarul de participanti e egal, atunci returnam oricare activitate dintre cele doua
+Activitate Activitate :: operator / (Activitate& activitate)
+{
+    Activitate copie=*this;
+    if(activitate.numarProduseRealizate>copie.numarProduseRealizate)
+        return activitate;
+    else if(activitate.numarProduseRealizate<copie.numarProduseRealizate)
+        return copie;
+    else if(activitate.numarParticipantiActivitate>copie.numarParticipantiActivitate)
+        return activitate;
+    else if(activitate.numarParticipantiActivitate<copie.numarParticipantiActivitate)
+        return copie;
+    else
+        return copie;
+}
+//operatorul >=
+bool operator >= (const Activitate& act1, const Activitate& act2)
+{
+    return act1.numarParticipantiActivitate>=act2.numarParticipantiActivitate;
+}
+//operatorul ==
+bool operator == (const Activitate& act1, const Activitate& act2)
+{
+    return act1.numarProduseRealizate==act2.numarProduseRealizate;
+}
+///operatorul - intre clasa SalaAtelier si Activitate
+SalaAtelier operator - (SalaAtelier sala, Activitate activitate)
+{
+    if(sala.getSefSala()==activitate.getReprezentantActivitate())
+        return sala;
+    else throw runtime_error("Nu sunt compatibile");
+}
+SalaAtelier operator - (SalaAtelier sala1, SalaAtelier sala2)
+{
+    if(sala1.getSefSala()==sala2.getSefSala())
+        return sala1;
+    else throw runtime_error("Nu sunt compatibile");
+}
+SalaAtelier operator - (Activitate activitate, SalaAtelier sala)
+{
+    if(sala.getSefSala()==activitate.getReprezentantActivitate())
+        return sala;
+    else throw runtime_error("Nu sunt compatibile");
+}
+Activitate operator - (Activitate activitate1, Activitate activitate2)
+{
+    if(activitate1.getReprezentantActivitate()==activitate2.getReprezentantActivitate())
+        return activitate1;
+    else throw runtime_error("Nu sunt compatibile");
+}
+
+int main()
+{
+    ///Sali
+    vector<SalaAtelier> sali;
+
+    SalaAtelier sala1("Andreea", "Atelier de pictura", true, 33, new int[33]{14}, 'A', 4536.77, 2344.99);
+    SalaAtelier sala2("Mara", "Atelier de traforaj", true, 15, new int[15]{11}, 'B', 2788.45, 1355.84);
+    SalaAtelier sala3("Bianca", "Atelier de felicitari", false, 20, new int[20]{20}, 'B', 1455.78, 544.89);
+    SalaAtelier sala4("Ingrid", "Atelier de lucru cu ate", true, 35, new int[35]{22}, 'A', 5788.99, 3221.82);
+
+    sali.push_back(sala1);
+    sali.push_back(sala2);
+    sali.push_back(sala3);
+    sali.push_back(sala4);
+
+    ///Produse
+    vector<Produs> produse;
+
+    Produs p1("Bratara prieteniei",14.5,100,"Sala4","123456789","ata","bijuterii",15.00,2.00,0.3);
+    Produs p2("Cutie de accesorii",35.75,50,"Sala2","123456798","lemn","bijuterii",20.00,10.00,5.00);
+    Produs p3("Felicitare de Paste",2.5,150,"Sala3","123456987","carton","cadouri",10.50,5.50,0.01);
+    Produs p4("Tablou de primavara",320.78,55,"Sala1","123459876","panza","decoratiuni",50.77,26.8,4.3);
+    Produs p5("Felicitare de Craciun",2.5,150,"Sala3","123456987","carton","cadouri",10.50,5.50,0.01);
+
+    produse.push_back(p1);
+    produse.push_back(p2);
+    produse.push_back(p3);
+    produse.push_back(p4);
+    produse.push_back(p5);
+
+    int numarProduse=produse.size();
+
+    ///Angajati
+    vector<Angajat> angajati;
+
+    Angajat a1("Ionel Popescu",30,"Dristor","ionel@gmail.com","0755643211","reprezentant",3545.88,"12.12.2020",false,"12.12.2024");
+    Angajat a2("Ionela Popescu",31,"Grozavesti","ionela@gmail.com","0752345211","secretara",3789.98,"06.09.2020",true,"inexistent");
+    Angajat a3("Ionica Popescu",32,"Unirii","ionica@gmail.com","0755643201","ingrijitor",2765.55,"12.12.2020",false,"12.12.2024");
+    Angajat a4("Ioana Popescu",25,"Iancului","ioana@gmail.com","0759877650","vanzator",3000.12,"18.10.2020",false,"18.10.2024");
+
+    angajati.push_back(a1);
+    angajati.push_back(a2);
+    angajati.push_back(a3);
+    angajati.push_back(a4);
+
+    int numarAngajati=angajati.size();
+
+    ///Activitati
+    vector<Activitate> activitati;
+
+    Activitate act1("Pictura pe numere",120,"12.03.2024","marti","Sala1","Andreea",56,false,14);
+    Activitate act2("Confectionare felicitari",120,"13.03.2024","miercuri","Sala3","Bianca",1000,true,20);
+    Activitate act3("Lucru cu lemnul",180,"14.03.2024","joi","Sala2","Mara",35,false,11);
+    Activitate act4("Confectionare bratari",180,"15.03.2024","vineri","Sala4","Ingrid",100,false,22);
+
+    activitati.push_back(act1);
+    activitati.push_back(act2);
+    activitati.push_back(act3);
+    activitati.push_back(act4);
+
+    int numarActivitati=activitati.size();
+
+
+    ///~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~MENIU INTERACTIV~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    cout<<"                                  BUN VENIT LA ATELIERUL DE LUCRU MANUAL!                                  "<<'\n'<<'\n';
+    cout<<"~~>Daca doriti sa operati asupra salilor atelierului nostru, apasati tasta 1."<<'\n';
+    cout<<"~~>Daca doriti sa operati asupra produselor din atelierul nostru, apasati tasta 2."<<'\n';
+    cout<<"~~>Daca doriti sa operati asupra angajatilor din atelierul nostru, apasati tasta 3."<<'\n';
+    cout<<"~~>Daca doriti sa operati asupra activitatilor din atelierul nostru, apasati tasta 4."<<'\n';
+
+    int tasta;
+    cin>>tasta;
+
+    system("cls"); //functie stergere ecran
+    while(tasta!=9)
+    {
+        switch(tasta)
+        {
+            case 1: //sala atelier
+            {
+                cout<<"                                  Ati selectat <<<<<SALA ATELIER>>>>>                                  "<<'\n'<<'\n';
+                cout<<"Va rugam sa introduceti numele dumneavoastra. Puteti opera asupra salilor doar daca sunteti seful uneia."<<'\n'<<'\n'<<'\n'<<'\n';
+                cout<<"n u m e ~~~> ";
+                string nume;
+                cin>>nume;
+
+                system("cls");
+                bool sefModificat=false;
+                bool salaStearsa=false;
+
+                //verific daca am in sistem numele citit la tastatura drept sef de sala
+                int gasit=-1;
+                for(auto sala=sali.begin(); sala<=sali.end(); sala++)
+                {
+                    int indice=distance(sali.begin(),sala);
+                    if(nume==sala->getSefSala())
+                        {
+                            gasit=indice;
+                            break;
+                        }
+                }
+                //daca gasesc numele printre sefii de sali din atelier atunci pot opera pe sala de atelier a sefului respectiv
+                if(gasit!=-1 && gasit<sali.size())
+                {
+                    SalaAtelier& sala=sali[gasit].getSala(sali, gasit);
+                    cout<<"Buna ziua, "<<sala.getSefSala()<<"! Aveti dreptul sa operati asupra salilor. Va rugam sa alegeti urmatoarea operatiune."<<'\n';
+                    cout<<"~~>Pentru creare sala, apasati tasta 1."<<'\n';
+                    cout<<"~~>Pentru afisare sala, apasati tasta 2."<<'\n';
+                    cout<<"~~>Pentru modificarea datelor despre sala, apasati tasta 3."<<'\n';
+                    cout<<"~~>Pentru stergerea salii dumneavoastra, apasati tasta 4."<<'\n';
+                    cin>>tasta;
+                    while(tasta!=9)
+                    {
+                        switch(tasta)
+                        {
+                            case 1: //creare sala
+                            {
+                                  system("cls");
+                                  SalaAtelier salaNoua;
+                                  cin>>salaNoua;
+                                  sali.push_back(salaNoua);
+                                  cout<<"O noua sala a fost creata.\n\n";
+                                  cout<<"~~>Daca doriti sa efectuati o alta operatiune asupra salilor, apasati 0. Altfel, apasati 9."<<'\n';
+                                  cin>>tasta;
+                                  system("cls");
+                                  break;
+                            }
+                            case 2: //afisare sala
+                            {
+                                system("cls");
+                                SalaAtelier& sala=sali[gasit].getSala(sali, gasit);
+                                cout<<nume<<", aceasta este sala dumneavoastra:\n"<<sala<<'\n'<<'\n';
+                                cout<<"~~>Daca doriti sa efectuati o alta operatiune asupra salilor, apasati 0. Altfel, apasati 9."<<'\n';
+                                cin>>tasta;
+                                system("cls");
+                                break;
+                            }
+                            case 3: //modificare sala
+                            {
+                                system("cls");
+                                SalaAtelier& sala=sali[gasit].getSala(sali, gasit);
+                                cout<<"~~>"+nume+", ce ati dori sa modificati la sala dumneavoastra?\n";
+                                cout<<"~~>In functie de ceea ce doriti sa modificati, va rugam sa apasati tasta corespunzatoare.\n\n\n";
+                                cout<<"<1>seful salii\n<2>numele salii\n<3>disponibilitatea salii\n<4>numarul de locuri din sala\n";
+                                cout<<"<5>zona salii\n<6>costurile lunare aferente salii\n<7>profitul lunar aferent salii\n\n";
+                                cout<<"Tasta dumneavoastra: ";
+                                cin>>tasta;
+                                system("cls");
+                                while(tasta!=9 && sefModificat==false)
+                                {
+                                    switch(tasta)
+                                    {
+                                        case 1:
+                                        {
+                                            string inlocuieste;
+                                            cout<<"Numele cu care doriti sa inlocuiti seful de sala este: ";
+                                            cin>>inlocuieste;
+                                            sala.setSefSala(inlocuieste);
+                                            cout<<"Seful de sala a fost actualizat. Datele actualizate despre sala sunt:\n\n";
+                                            sala.afisareSala();
+                                            sefModificat=true;
+                                            cout<<"\n\n~~>Nu mai sunteti seful acestei sali, deci nu mai aveti dreptul de a opera asupra salilor.\n\n\n";
+                                            tasta=9;
+                                            break;
+                                        }
+                                        case 2:
+                                        {
+                                            char* inlocuieste=new char[100];
+                                            cout<<"Numele cu care doriti sa inlocuiti numele salii este: ";
+                                            cin.get();
+                                            cin.getline(inlocuieste,101);
+                                            sala.setNumeSala(inlocuieste);
+                                            cout<<"Numele salii a fost actualizat. Datele actualizate despre sala sunt:\n\n";
+                                            sala.afisareSala();
+                                            cout<<"\n\n~~>Doriti sa modificati si altceva? Daca da, apasati 0. Daca nu, apasati 9.\n";
+                                            cin>>tasta;
+                                            system("cls");
+                                            break;
+                                        }
+                                        case 3:
+                                        {
+                                            bool inlocuieste;
+                                            cout<<"Noua disponibilitate a salii este: ";
+                                            cin>>inlocuieste;
+                                            sala.setDisponibilitateSala(inlocuieste);
+                                            cout<<"Disponibilitatea salii a fost modificata. Datele actualizate despre sala sunt:\n\n";
+                                            sala.afisareSala();
+                                            cout<<"\n\n~~>Doriti sa modificati si altceva? Daca da, apasati 0. Daca nu, apasati 9.\n";
+                                            cin>>tasta;
+                                            system("cls");
+                                            break;
+                                        }
+                                        case 4:
+                                        {
+                                            int inlocuieste;
+                                            cout<<"Noul numar de locuri al salii este: ";
+                                            cin>>inlocuieste;
+                                            sala.setNumarLocuri(inlocuieste);
+                                            cout<<"Numarul de locuri alocate salii a fost modificat. Datele actualizate despre sala sunt:\n\n";
+                                            sala.afisareSala();
+                                            cout<<"\n\n~~>Doriti sa modificati si altceva? Daca da, apasati 0. Daca nu, apasati 9.\n";
+                                            cin>>tasta;
+                                            system("cls");
+                                            break;
+                                        }
+                                        case 5:
+                                        {
+                                            char inlocuieste;
+                                            cout<<"Noua zona a salii este: ";
+                                            cin>>inlocuieste;
+                                            sala.setZonaSala(inlocuieste);
+                                            cout<<"Zona salii a fost actualizata. Datele actualizate despre sala sunt:\n\n";
+                                            sala.afisareSala();
+                                            cout<<"\n\n~~>Doriti sa modificati si altceva? Daca da, apasati 0. Daca nu, apasati 9.\n";
+                                            cin>>tasta;
+                                            system("cls");
+                                            break;
+                                        }
+                                        case 6:
+                                        {
+                                            double inlocuieste;
+                                            cout<<"Noile costuri lunare aferente salii sunt: ";
+                                            cin>>inlocuieste;
+                                            sala.setCosturiLunare(inlocuieste);
+                                            cout<<"Costurile lunare aferente salii au fost actualizate. Datele actualizate despre sala sunt:\n\n";
+                                            sala.afisareSala();
+                                            cout<<"\n\n~~>Doriti sa modificati si altceva? Daca da, apasati 0. Daca nu, apasati 9.\n";
+                                            cin>>tasta;
+                                            system("cls");
+                                            break;
+                                        }
+                                        case 7:
+                                        {
+                                            float inlocuieste;
+                                            cout<<"Noul profit lunar aferent salii este: ";
+                                            cin>>inlocuieste;
+                                            sala.setProfitLunar(inlocuieste);
+                                            cout<<"Profitul salii a fost actualizat. Datele actualizate despre sala sunt:\n\n";
+                                            sala.afisareSala();
+                                            cout<<"\n\n~~>Doriti sa modificati si altceva? Daca da, apasati 0. Daca nu, apasati 9.\n";
+                                            cin>>tasta;
+                                            system("cls");
+                                            break;
+                                        }
+                                        case 0:
+                                        {
+                                            SalaAtelier& sala=sali[gasit].getSala(sali, gasit);
+                                            cout<<"~~>"+nume+", ce ati dori sa mai modificati la sala dumneavoastra?\n";
+                                            cout<<"~~>In functie de ceea ce doriti sa modificati, va rugam sa apasati tasta corespunzatoare.\n\n\n";
+                                            cout<<"<1>seful salii\n<2>numele salii\n<3>disponibilitatea salii\n<4>numarul de locuri din sala\n";
+                                            cout<<"<5>zona salii\n<6>costurile lunare aferente salii\n<7>profitul lunar aferent salii\n\n";
+                                            cout<<"Tasta dumneavoastra: ";
+                                            cin>>tasta;
+                                            system("cls");
+                                            break;
+                                        }
+                                        default:
+                                        {
+                                            tasta=9;
+                                            break;
+                                        }
+                                    }
+                                }
+                                //daca seful a fost modificat, atunci seful curent nu mai are drept de operare asupra salilor
+                                if(sefModificat==false)
+                                {
+                                    system("cls");
+                                    cout<<"\n~~>Daca doriti sa efectuati o alta operatiune asupra salilor, apasati 0. Altfel, apasati 9."<<'\n';
+                                    cin>>tasta;
+                                    system("cls");
+                                }
+                                break;
+                            }
+                            case 4:
+                            {
+                                system("cls");
+                                sali.erase(sali.begin()+gasit);
+                                cout<<"Sala dumneavoastra a fost stearsa! Va multumim ca ati colaborat cu noi!"<<'\n';
+                                tasta=9;
+                                salaStearsa=true;
+                                break;
+                            }
+                            case 0:
+                            {
+                                if(sefModificat==false)
+                                {
+                                    system("cls");
+                                    cout<<"~~>Pentru creare sala, apasati tasta 1."<<'\n';
+                                    cout<<"~~>Pentru afisare sala, apasati tasta 2."<<'\n';
+                                    cout<<"~~>Pentru modificarea datelor despre sala, apasati tasta 3."<<'\n';
+                                    cout<<"~~>Pentru stergerea salii dumneavoastra, apasati tasta 4."<<'\n';
+                                    cin>>tasta;
+                                }
+                                break;
+                            }
+                            default:
+                            {
+                                tasta=9;
+                                break;
+                            }
+                        }
+                    }
+                }
+                cout<<"~~>Multumim ca ati operat asupra salilor de atelier!\n\n";
+                if(sefModificat==false && salaStearsa==false)
+                {
+                    cout<<"\n\n~~>Daca doriti sa efectuati o alta operatiune, apasati 0. Altfel, apasati 9."<<'\n';
+                    cin>>tasta;
+                }
+                break;
+            }
+            case 2: //produs
+            {
+                cout<<"                                  Ati selectat <<<<<PRODUSE>>>>>                                  "<<'\n'<<'\n';
+                cout<<"Va rugam sa introduceti numele dumneavoastra. Puteti opera asupra produselor doar daca sunteti seful uneia dintre salile de atelier."<<'\n'<<'\n'<<'\n'<<'\n';
+                cout<<"n u m e ~~~> ";
+                string nume;
+                cin>>nume;
+
+                system("cls");
+
+                //verific daca am in sistem numele citit la tastatura drept sef de sala
+                int gasit=-1;
+                for(auto sala=sali.begin(); sala<=sali.end(); sala++)
+                {
+                    int indice=distance(sali.begin(),sala);
+                    if(nume==sala->getSefSala())
+                        {
+                            gasit=indice;
+                            break;
+                        }
+                }
+                //daca gasesc numele printre sefii de sali din atelier atunci pot opera pe produsele din atelier
+                //un sef poate opera pe toate produsele, inclusiv pe cele care nu sunt realizate in sala lui
+                if(gasit!=-1 && gasit<sali.size())
+                {
+                    SalaAtelier& sala=sali[gasit].getSala(sali, gasit);
+                    cout<<"Buna ziua, "<<sala.getSefSala()<<"! Aveti dreptul sa operati asupra produselor. Va rugam sa alegeti urmatoarea operatiune."<<'\n';
+                    cout<<"~~>Pentru afisarea tuturor produselor din atelier, apasati tasta 1."<<'\n';
+                    cout<<"~~>Pentru adaugarea unui nou produs, apasati tasta 2."<<'\n';
+                    cout<<"~~>Pentru modificarea datelor despre un produs, apasati tasta 3."<<'\n';
+                    cout<<"~~>Pentru stergerea unui produs, apasati tasta 4."<<'\n';
+                    cin>>tasta;
+
+                    while(tasta!=9)
+                    {
+                        switch(tasta)
+                        {
+                            case 1:
+                            {
+                                system("cls");
+                                for(auto produs=produse.begin(); produs!=produse.end(); produs++)
+                                    cout<<*produs<<'\n';
+                                cout<<"\n\n~~>Daca doriti sa efectuati o alta operatiune asupra produselor, apasati 0. Altfel, apasati 9."<<'\n';
+                                cin>>tasta;
+                                system("cls");
+                                break;
+                            }
+                            case 2:
+                            {
+                                system("cls");
+                                Produs produsNou;
+                                cin.get();
+                                produsNou.citireProdus();
+                                produse.push_back(produsNou);
+                                cout<<"Un nou produs a fost adaugat.\n\n";
+                                cout<<"~~>Daca doriti sa efectuati o alta operatiune asupra produselor, apasati 0. Altfel, apasati 9.\n";
+                                cin>>tasta;
+                                system("cls");
+                                break;
+                            }
+                            case 3:
+                            {
+                                system("cls");
+                                cout<<"~~>Ce produs ati dori sa modificati?\n\n";
+                                int index;
+                                cout<<"~~>Introduceti numarul produsului pe care doriti sa il modificati:";
+                                cin>>index;
+                                Produs& produs=produse[index];
+                                system("cls");
+                                cout<<"~~>Ce anume ati dori sa modificati la acest produs? Tastati numarul corespunzator.\n\n";
+                                cout<<"<1>adaugarea unui material\n<2>adaugarea unei categorii\n<3>adaugarea unui producator la cel curent\n<4>actualizarea stocului produsului\n<5>actualizarea pretului produsului\n\n";
+                                cout<<"Tasta dumneavoastra: ";
+                                cin>>tasta;
+                                while(tasta!=9)
+                                {
+                                    switch(tasta)
+                                    {
+                                        case 1:
+                                        {
+                                            system("cls");
+                                            string materialNou;
+                                            cout<<"Materialul pe care doriti sa il adaugati este: ";
+                                            cin>>materialNou;
+                                            produs=produs+materialNou; //utilizare operator + din Produs
+                                            cout<<"Materialul produsului a fost actualizat. Acum, datele despre produs sunt urmatoarele: \n\n";
+                                            cout<<produs;
+                                            cout<<"\n\n~~>Doriti sa modificati si altceva? Daca da, apasati 0. Daca nu, apasati 9.\n";
+                                            cin>>tasta;
+                                            break;
+                                        }
+                                        case 2:
+                                        {
+                                            system("cls");
+                                            string categorieNoua;
+                                            cout<<"Categoria pe care doriti sa o adaugati este: ";
+                                            cin>>categorieNoua;
+                                            produs=produs/categorieNoua; //utilizare operator / din Produs
+                                            cout<<"Categoria produsului a fost actualizata. Acum, datele despre produs sunt urmatoarele: \n\n";
+                                            cout<<produs;
+                                            cout<<"\n\n~~>Doriti sa modificati si altceva? Daca da, apasati 0. Daca nu, apasati 9.\n";
+                                            cin>>tasta;
+                                            break;
+                                        }
+                                        case 3:
+                                        {
+                                            system("cls");
+                                            cout<<"Producatorul pe care doriti sa il adaugati este producatorul produsului cu numarul: ";
+                                            int nr;
+                                            cin>>nr;
+                                            Produs& produsProducator=produse[nr];
+                                            produs=produs*produsProducator; //utilizare operator * din Produs
+                                            cout<<"Producatorul produsului a fost actualizat. Acum, datele despre produs sunt urmatoarele: \n\n";
+                                            cout<<produs;
+                                            cout<<"\n\n~~>Doriti sa modificati si altceva? Daca da, apasati 0. Daca nu, apasati 9.\n";
+                                            cin>>tasta;
+                                            break;
+                                        }
+                                        case 4:
+                                        {
+                                            system("cls");
+                                            int stocNou;
+                                            cout<<"Noul stoc al produsului este: ";
+                                            cin>>stocNou;
+                                            produs.actualizareStocProdus(stocNou); //utilizare functionalitate din Produs
+                                            cout<<"Stocul produsului a fost actualizat. Acum, datele despre produs sunt urmatoarele: \n\n";
+                                            cout<<produs;
+                                            cout<<"\n\n~~>Doriti sa modificati si altceva? Daca da, apasati 0. Daca nu, apasati 9.\n";
+                                            cin>>tasta;
+                                            break;
+                                        }
+                                        case 5:
+                                        {
+                                            system("cls");
+                                            float pretNou;
+                                            cout<<"Noul pret al produsului este: ";
+                                            cin>>pretNou;
+                                            produs.actualizarePretProdus(pretNou); //utilizare functionalitate din Produs
+                                            cout<<"Pretul produsului a fost actualizat. Acum, datele despre produs sunt urmatoarele: \n\n";
+                                            cout<<produs;
+                                            cout<<"\n\n~~>Doriti sa modificati si altceva? Daca da, apasati 0. Daca nu, apasati 9.\n";
+                                            cin>>tasta;
+                                            break;
+                                        }
+                                        case 0:
+                                        {
+                                            Produs& produs=produse[index];
+                                            system("cls");
+                                            cout<<"~~>Ce anume ati dori sa mai modificati la acest produs? Tastati numarul corespunzator.\n\n";
+                                            cout<<"<1>adaugarea unui material\n<2>adaugarea unei categorii\n<3>adaugarea unui producator la cel curent\n<4>actualizarea stocului produsului\n<5>actualizarea pretului produsului\n\n";
+                                            cout<<"Tasta dumneavoastra: ";
+                                            cin>>tasta;
+                                            break;
+                                        }
+                                        default:
+                                        {
+                                            tasta=9;
+                                            break;
+                                        }
+                                    }
+                                }
+                                cout<<"~~>Daca doriti sa efectuati o alta operatiune asupra produselor, apasati 0. Altfel, apasati 9.\n";
+                                cin>>tasta;
+                                break;
+                            }
+                            case 4:
+                            {
+                                system("cls");
+                                int index;
+                                cout<<"Introduceti indexul produsului pe care doriti sa il stergeti: ";
+                                cin>>index;
+                                produse.erase(produse.begin()+index);
+                                cout<<"Produsul dumneavoastra a fost sters!"<<'\n';
+                                tasta=9;
+                                numarProduse--;
+                                if(numarProduse>0)
+                                {
+                                    system("cls");
+                                    cout<<"~~>Daca doriti sa efectuati o alta operatiune asupra produselor, apasati 0. Altfel, apasati 9.\n";
+                                    cin>>tasta;
+                                }
+                                else
+                                    cout<<"Nu mai exista produse asupra carora sa operati.\n";
+                                break;
+                            }
+                            case 0:
+                            {
+                                system("cls");
+                                cout<<"~~>Pentru afisarea tuturor produselor din atelier, apasati tasta 1."<<'\n';
+                                cout<<"~~>Pentru adaugarea unui nou produs, apasati tasta 2."<<'\n';
+                                cout<<"~~>Pentru modificarea datelor despre un produs, apasati tasta 3."<<'\n';
+                                cout<<"~~>Pentru stergerea unui produs, apasati tasta 4."<<'\n';
+                                cin>>tasta;
+                                break;
+                            }
+                            default:
+                            {
+                                tasta=9;
+                                break;
+                            }
+                        }
+                    }
+                }
+                cout<<"Multumim ca ati operat asupra produselor noastre!\n\n";
+                cout<<"\n\n~~>Daca doriti sa efectuati o alta operatiune, apasati 0. Altfel, apasati 9."<<'\n';
+                cin>>tasta;
+                break;
+            }
+            case 3: //angajat
+            {
+                cout<<"                                  Ati selectat <<<<<ANGAJAT>>>>>                                  "<<'\n'<<'\n';
+                cout<<"Va rugam sa introduceti numele dumneavoastra. Puteti opera asupra angajatilor doar daca sunteti seful unei sali de atelier."<<'\n'<<'\n'<<'\n'<<'\n';
+                cout<<"n u m e ~~~> ";
+                string nume;
+                cin>>nume;
+
+                system("cls");
+
+                //verific daca am in sistem numele citit la tastatura drept sef de sala
+                int gasit=-1;
+                for(auto sala=sali.begin(); sala<=sali.end(); sala++)
+                {
+                    int indice=distance(sali.begin(),sala);
+                    if(nume==sala->getSefSala())
+                        {
+                            gasit=indice;
+                            break;
+                        }
+                }
+                //daca gasesc numele printre sefii de sali din atelier atunci pot opera pe sala de atelier a sefului respectiv
+                if(gasit!=-1 && gasit<sali.size())
+                {
+                    SalaAtelier& sala=sali[gasit].getSala(sali, gasit);
+                    cout<<"Buna ziua, "<<sala.getSefSala()<<"! Aveti dreptul sa operati asupra angajatilor. Va rugam sa alegeti urmatoarea operatiune."<<'\n';
+                    cout<<"~~>Pentru inregistrarea unei noi angajari, apasati tasta 1."<<'\n';
+                    cout<<"~~>Pentru afisarea angajatilor din atelier, apasati tasta 2."<<'\n';
+                    cout<<"~~>Pentru operarea asupra datelor despre un angajat, apasati tasta 3."<<'\n';
+                    cout<<"~~>Pentru eliminarea unui angajat din sistem, apasati tasta 4."<<'\n';
+                    cin>>tasta;
+                    while(tasta!=9)
+                    {
+                        switch(tasta)
+                        {
+                            case 1:
+                            {
+                                system("cls");
+                                Angajat angajatNou;
+                                cin>>angajatNou;
+                                angajati.push_back(angajatNou);
+                                cout<<'\n'<<'\n';
+                                cout<<"Un nou angajat a fost adaugat.\n\n";
+                                cout<<"~~>Daca doriti sa efectuati o alta operatiune asupra angajatilor, apasati 0. Altfel, apasati 9."<<'\n';
+                                cin>>tasta;
+                                system("cls");
+                                break;
+                            }
+                            case 2:
+                            {
+                                system("cls");
+                                for(auto angajat=angajati.begin(); angajat!=angajati.end(); angajat++)
+                                    cout<<*angajat<<'\n';
+                                cout<<"\n\n~~>Daca doriti sa efectuati o alta operatiune asupra angajatilor, apasati 0. Altfel, apasati 9."<<'\n';
+                                cin>>tasta;
+                                system("cls");
+                                break;
+                            }
+                            case 3:
+                            {
+                                system("cls");
+                                cout<<"~~>Asupra carui angajat ati dori sa operati?\n\n";
+                                int index;
+                                cout<<"~~>Introduceti numarul angajatului pentru care doriti sa operati asupra datelor:";
+                                cin>>index;
+                                Angajat& angajat=angajati[index];
+                                system("cls");
+                                cout<<"~~>Ce anume ati dori sa operati asupra acestui angajat? Tastati numarul corespunzator.\n\n";
+                                cout<<"<1>penalizare la salariu cu 15%\n<2>penalizare contract sau salariu\n<3>stabilire competenta angajat\n\n";
+                                cout<<"Tasta dumneavoastra: ";
+                                cin>>tasta;
+                                while(tasta!=9)
+                                {
+                                    switch(tasta)
+                                    {
+                                        case 1:
+                                        {
+                                            system("cls");
+                                            angajat--; //utilizare operator -- din Angajat
+                                            cout<<"Angajatul a fost penalizat cu 15% din salariu. Acum, datele despre angajat sunt urmatoarele: \n\n";
+                                            cout<<angajat;
+                                            cout<<"\n\n~~>Doriti sa modificati si altceva? Daca da, apasati 0. Daca nu, apasati 9.\n";
+                                            cin>>tasta;
+                                            break;
+                                        }
+                                        case 2:
+                                        {
+                                            system("cls");
+                                            cout<<"Daca angajatul are contract pe perioada nedeterminata, atunci contractul sau se modifica in perioada determinata.\n";
+                                            cout<<"Daca angajatul are contract pe perioada determinata, atunci acesta este penalizat cu un procent din salariu.\n";
+                                            int procent;
+                                            cout<<"In cazul in care angajatul are contract pe perioada determinata, care este procentul penalizarii?\n";
+                                            cout<<"Introduceti procentul penalizarii: ";
+                                            cin>>procent;
+                                            angajat=angajat-procent; //utilizare operator - din Angajat
+                                            cout<<"Operatia a fost efectuata. Acum, datele despre angajat sunt urmatoarele: \n\n";
+                                            cout<<angajat;
+                                            cout<<"\n\n~~>Doriti sa modificati si altceva? Daca da, apasati 0. Daca nu, apasati 9.\n";
+                                            cin>>tasta;
+                                            break;
+                                        }
+                                        case 3:
+                                        {
+                                            system("cls");
+                                            cout<<"Angajatul de comparat cu cel curent este angajatul cu numarul: ";
+                                            int nr;
+                                            cin>>nr;
+                                            Angajat& angajatComparatie=angajati[nr];
+                                            bool status;
+                                            status=angajat<=angajatComparatie; //utilizare operator <= din Angajat
+                                            if(status==true)
+                                                cout<<"Angajatul curent nu este competent.\n";
+                                            else
+                                                cout<<"Angajatul curent este competent.\n";
+                                            cout<<"\n\n~~>Doriti sa modificati si altceva? Daca da, apasati 0. Daca nu, apasati 9.\n";
+                                            cin>>tasta;
+                                            break;
+                                        }
+                                        case 0:
+                                        {
+                                            system("cls");
+                                            cout<<"~~>Ce anume ati dori sa operati asupra acestui angajat? Tastati numarul corespunzator.\n\n";
+                                            cout<<"<1>penalizare la salariu cu 15%\n<2>penalizare contract sau salariu\n<3>stabilire competenta angajat\n\n";
+                                            cout<<"Tasta dumneavoastra: ";
+                                            cin>>tasta;
+                                            break;
+                                        }
+                                        default:
+                                        {
+                                            tasta=9;
+                                            break;
+                                        }
+                                    }
+                                }
+                                system("cls");
+                                cout<<"~~>Daca doriti sa efectuati o alta operatiune asupra angajatilor, apasati 0. Altfel, apasati 9.\n";
+                                cin>>tasta;
+                                break;
+                            }
+                            case 4:
+                            {
+                                system("cls");
+                                int index;
+                                cout<<"Introduceti numarul angajatului pe care doriti sa il stergeti: ";
+                                cin>>index;
+                                angajati.erase(angajati.begin()+index);
+                                cout<<"Angajatul dumneavoastra a fost sters!"<<'\n';
+                                tasta=9;
+                                numarAngajati--;
+                                if(numarAngajati>0)
+                                {
+
+                                    cout<<"\n\n~~>Daca doriti sa efectuati o alta operatiune asupra angajatilor, apasati 0. Altfel, apasati 9.\n";
+                                    cin>>tasta;
+                                }
+                                else
+                                    cout<<"\n\nNu mai exista angajati asupra carora sa operati.\n";
+                                break;
+                            }
+                            case 0:
+                            {
+                                system("cls");
+                                cout<<"~~>Pentru inregistrarea unei noi angajari, apasati tasta 1."<<'\n';
+                                cout<<"~~>Pentru afisarea angajatilor din atelier, apasati tasta 2."<<'\n';
+                                cout<<"~~>Pentru operarea asupra datelor despre un angajat, apasati tasta 3."<<'\n';
+                                cout<<"~~>Pentru eliminarea unui angajat din sistem, apasati tasta 4."<<'\n';
+                                cin>>tasta;
+                                break;
+                            }
+                            default:
+                            {
+                                tasta=9;
+                                break;
+                            }
+                        }
+                    }
+                }
+                cout<<"Multumim ca ati operat asupra angajatilor nostri!\n\n";
+                cout<<"\n\n~~>Daca doriti sa efectuati o alta operatiune, apasati 0. Altfel, apasati 9."<<'\n';
+                cin>>tasta;
+                break;
+            }
+            case 4: //activitate
+            {
+                cout<<"                                  Ati selectat <<<<<ACTIVITATI>>>>>                                  "<<'\n'<<'\n';
+                cout<<"Va rugam sa introduceti numele dumneavoastra. Puteti opera asupra activitatilor doar daca sunteti seful uneia dintre salile de atelier."<<'\n'<<'\n'<<'\n'<<'\n';
+                cout<<"n u m e ~~~> ";
+                string nume;
+                cin>>nume;
+
+                bool reprezentantul=false;
+                system("cls");
+
+                //verific daca am in sistem numele citit la tastatura drept sef de sala
+                int gasit=-1;
+                for(auto sala=sali.begin(); sala<=sali.end(); sala++)
+                {
+                    int indice=distance(sali.begin(),sala);
+                    if(nume==sala->getSefSala())
+                        {
+                            gasit=indice;
+                            break;
+                        }
+                }
+                //daca gasesc numele printre sefii de sali din atelier atunci pot opera pe produsele din atelier
+                //un sef poate opera pe toate produsele, inclusiv pe cele care nu sunt realizate in sala lui
+                if(gasit!=-1 && gasit<sali.size())
+                {
+                    SalaAtelier& sala=sali[gasit].getSala(sali, gasit);
+                    cout<<"Buna ziua, "<<sala.getSefSala()<<"! Aveti dreptul sa operati asupra produselor. Va rugam sa alegeti urmatoarea operatiune."<<'\n';
+                    cout<<"~~>Pentru afisarea tuturor activitatilor din atelier, apasati tasta 1."<<'\n';
+                    cout<<"~~>Pentru adaugarea unei noi activitati, apasati tasta 2."<<'\n';
+                    cout<<"~~>Pentru modificarea datelor despre o activitate, apasati tasta 3."<<'\n';
+                    cout<<"~~>Pentru stergerea unei activitati, apasati tasta 4."<<'\n';
+                    cin>>tasta;
+
+                    while(tasta!=9)
+                    {
+                        switch(tasta)
+                        {
+                            case 1:
+                            {
+                                system("cls");
+                                for(auto act=activitati.begin(); act!=activitati.end(); act++)
+                                    cout<<*act<<'\n';
+                                cout<<"\n\n~~>Daca doriti sa efectuati o alta operatiune asupra activitatilor, apasati 0. Altfel, apasati 9."<<'\n';
+                                cin>>tasta;
+                                system("cls");
+                                break;
+                            }
+                            case 2:
+                            {
+                                system("cls");
+                                Activitate activitateNoua;
+                                cin.get();
+                                activitateNoua.citireActivitate();
+                                activitati.push_back(activitateNoua);
+                                cout<<"O noua activitate a fost adaugata.\n\n";
+                                cout<<"~~>Daca doriti sa efectuati o alta operatiune asupra activitatilor, apasati 0. Altfel, apasati 9.\n";
+                                cin>>tasta;
+                                system("cls");
+                                break;
+                            }
+                            case 3:
+                            {
+                                system("cls");
+                                cout<<"~~>Asupra carei activitati ati dori sa operati?\n\n";
+                                int index;
+                                cout<<"~~>Introduceti numarul activitatii pe care doriti sa o modificati:";
+                                cin>>index;
+                                Activitate& activitate=activitati[index];
+                                system("cls");
+                                cout<<"~~>Ce anume ati dori sa operati asupra acestei activitati? Tastati numarul corespunzator.\n\n";
+                                cout<<"<1>marirea numarului de produse realizate\n<2>modificarea numelui activitatii\n<3>stabilirea reprezentantului competent\n\n";
+                                cout<<"Tasta dumneavoastra: ";
+                                cin>>tasta;
+
+                                while(tasta!=9)
+                                {
+                                    switch(tasta)
+                                    {
+                                        case 1:
+                                        {
+                                            system("cls");
+                                            int nr;
+                                            cout<<"Introduceti numarul nou de obiecte realizate in cadrul activitatii: ";
+                                            cin>>nr;
+                                            activitate=activitate+nr; //utilizare operator + din Activitate
+                                            cout<<"Operatia a fost efectuata. Acum, datele despre activitate sunt urmatoarele: \n\n";
+                                            cout<<activitate;
+                                            cout<<"\n\n~~>Doriti sa modificati si altceva? Daca da, apasati 0. Daca nu, apasati 9.\n";
+                                            cin>>tasta;
+                                            break;
+                                        }
+                                        case 2:
+                                        {
+                                            system("cls");
+                                            char* inlocuieste=new char[100];
+                                            cout<<"Numele cu care doriti sa inlocuiti numele activitatii este: ";
+                                            cin.get();
+                                            cin.getline(inlocuieste,101);
+                                            activitate=activitate*inlocuieste; //utilizare operator * din Activitate
+                                            cout<<"Numele activitatii a fost actualizat. Datele actualizate despre activitate sunt:\n\n";
+                                            activitate.afisareActivitate();
+                                            cout<<"\n\n~~>Doriti sa modificati si altceva? Daca da, apasati 0. Daca nu, apasati 9.\n";
+                                            cin>>tasta;
+                                            break;
+                                        }
+                                        case 3:
+                                        {
+                                            system("cls");
+                                            cout<<"Reprezentantul de activitate de comparat cu cel curent este reprezentantul activitatii cu numarul: ";
+                                            int nr;
+                                            cin>>nr;
+                                            Activitate& reprezentant=activitati[nr];
+                                            activitate=activitate/reprezentant; //utilizare operator / din Activitate
+                                            cout<<"Reprezentantul a fost ales. Acestea sunt datele despre activitatea reprezentantului selectat: \n\n";
+                                            cout<<activitate;
+                                            reprezentantul=true;
+                                            tasta=9;
+                                            break;
+                                        }
+                                        case 0:
+                                        {
+                                            system("cls");
+                                            cout<<"~~>Ce anume ati dori sa operati asupra acestei activitati? Tastati numarul corespunzator.\n\n";
+                                            cout<<"<1>marirea numarului de produse realizate\n<2>modificarea numelui activitatii\n<3>stabilirea reprezentantului competent\n\n";
+                                            cout<<"Tasta dumneavoastra: ";
+                                            cin>>tasta;
+                                            break;
+                                        }
+                                        default:
+                                        {
+                                            tasta=9;
+                                            break;
+                                        }
+                                    }
+                                }
+                                if(reprezentantul==false)
+                                    system("cls");
+                                cout<<"\n\n~~>Daca doriti sa efectuati o alta operatiune asupra activitatilor, apasati 0. Altfel, apasati 9.\n";
+                                cin>>tasta;
+                                break;
+                            }
+                            case 4:
+                            {
+                                system("cls");
+                                int index;
+                                cout<<"Introduceti indexul activitatii pe care doriti sa o stergeti: ";
+                                cin>>index;
+                                activitati.erase(activitati.begin()+index);
+                                cout<<"Activitatea selectata de dumneavoastra a fost stearsa!"<<'\n';
+                                tasta=9;
+                                numarActivitati--;
+                                if(numarActivitati>0)
+                                {
+                                    cout<<"\n\n~~>Daca doriti sa efectuati o alta operatiune asupra activitatilor, apasati 0. Altfel, apasati 9.\n";
+                                    cin>>tasta;
+                                }
+                                else
+                                    cout<<"\n\nNu mai exista activitati asupra carora sa operati.\n";
+                                break;
+                            }
+                            case 0:
+                            {
+                                system("cls");
+                                cout<<"~~>Pentru afisarea tuturor activitatilor din atelier, apasati tasta 1."<<'\n';
+                                cout<<"~~>Pentru adaugarea unei noi activitati, apasati tasta 2."<<'\n';
+                                cout<<"~~>Pentru modificarea datelor despre o activitate, apasati tasta 3."<<'\n';
+                                cout<<"~~>Pentru stergerea unei activitati, apasati tasta 4."<<'\n';
+                                cin>>tasta;
+                                break;
+                            }
+                            default:
+                            {
+                                tasta=9;
+                                break;
+                            }
+                        }
+                    }
+                }
+                system("cls");
+                cout<<"Multumim ca ati operat asupra activitatilor noastre!\n\n";
+                cout<<"\n\n~~>Daca doriti sa efectuati o alta operatiune, apasati 0. Altfel, apasati 9."<<'\n';
+                cin>>tasta;
+                break;
+            }
+            case 0:
+            {
+                system("cls");
+                cout<<"~~>Daca doriti sa operati asupra salilor atelierului nostru, apasati tasta 1."<<'\n';
+                cout<<"~~>Daca doriti sa operati asupra produselor din atelierul nostru, apasati tasta 2."<<'\n';
+                cout<<"~~>Daca doriti sa operati asupra angajatilor din atelierul nostru, apasati tasta 3."<<'\n';
+                cout<<"~~>Daca doriti sa operati asupra activitatilor din atelierul nostru, apasati tasta 4."<<'\n';
+                cin>>tasta;
+                system("cls");
+                break;
+            }
+            default:
+            {
+                tasta=9;
+                break;
+            }
+        }
+    }
+    return 0;
+}

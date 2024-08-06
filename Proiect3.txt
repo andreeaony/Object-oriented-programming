@@ -1,0 +1,1218 @@
+#include <iostream>
+#include <vector>
+#include <set>
+#include <list>
+#include <map>
+#include <cstring>
+#include <stdexcept>
+#include <algorithm>
+using namespace std;
+
+class IOInterface
+{
+    public:
+        virtual istream& citire(istream& in)=0;
+        virtual ostream& afisare(ostream& out)const=0;
+};
+
+template <class T>
+class ProdusLucratManual:public IOInterface
+{
+    protected:
+        string denumireProdus;
+        float pretProdus;
+        int stocProdus;
+        T producatorProdus;
+    public:
+        ///Constructorii
+        ProdusLucratManual(); //constructorul fara parametri
+        ProdusLucratManual(string, float, int, T); //constructorul cu toti parametri
+        ProdusLucratManual(const ProdusLucratManual&); //copy-constructor
+
+        ///Operatorul =
+        ProdusLucratManual& operator = (const ProdusLucratManual&);
+
+        ///Citire si afisare
+        istream& citire(istream& in);
+        ostream& afisare(ostream& out) const;
+
+        ///Getter
+        int getStocProdus()const;
+
+        ///Destructorul
+        virtual ~ProdusLucratManual(){}
+};
+///Constructorii
+template <class T>
+ProdusLucratManual<T> :: ProdusLucratManual(): denumireProdus("Anonim"), pretProdus(0), stocProdus(0), producatorProdus(){}
+template <class T>
+ProdusLucratManual<T> :: ProdusLucratManual(string denumireProdus, float pretProdus, int stocProdus, T producatorProdus):denumireProdus(denumireProdus), pretProdus(pretProdus), stocProdus(stocProdus), producatorProdus(producatorProdus){}
+template <class T>
+ProdusLucratManual<T> :: ProdusLucratManual(const ProdusLucratManual& produs): denumireProdus(produs.denumireProdus), pretProdus(produs.pretProdus), stocProdus(produs.stocProdus), producatorProdus(produs.producatorProdus){}
+///Operatorul =
+template <class T>
+ProdusLucratManual<T>& ProdusLucratManual<T> :: operator = (const ProdusLucratManual<T>& produs)
+{
+    if(this!=&produs)
+    {
+        this->denumireProdus=produs.denumireProdus;
+        this->pretProdus=produs.pretProdus;
+        this->stocProdus=produs.stocProdus;
+        this->producatorProdus=produs.producatorProdus;
+    }
+    return *this;
+}
+///Operatorii de citire si afisare
+template <class T>
+istream& operator >>(istream& in, ProdusLucratManual<T>& produs)
+{
+    return produs.citire(in);
+}
+template <class T>
+ostream& operator <<(ostream& out, const ProdusLucratManual<T>& produs)
+{
+    return produs.afisare(out);
+}
+///Functii de citire si afisare
+template <class T>
+istream& ProdusLucratManual<T> :: citire(istream& in)
+{
+    try //inputuri invalide pentru pret/stoc
+    {
+        cout<<"Denumirea produsului este: ";
+        getline(in, denumireProdus);
+        cout<<"Pretul produsului este: ";
+        in>>pretProdus;
+        in.ignore();
+        if(in.fail())
+            throw runtime_error("Input invalid! Te rugam sa introduci o valoare numerica pentru pret!");
+        cout<<"Stocul curent al produsului este: ";
+        in>>stocProdus;
+        if(in.fail())
+            throw runtime_error("Input invalid! Te rugam sa introduci o valoare numerica pentru stoc!.");
+        in.ignore();
+        cout<<"Producatorul produsului este: ";
+        getline(in, producatorProdus);
+    }
+    catch (...)
+    {
+        cout<<"!!!Tipul de data pentru input nu este valid!!!\n";
+    }
+    return in;
+}
+template <class T>
+ostream& ProdusLucratManual<T> :: afisare(ostream& out) const
+{
+    out<<"Denumirea produsului este: "<<this->denumireProdus<<'\n';
+    out<<"Pretul produsului este: "<<this->pretProdus<<'\n';
+    out<<"Stocul curent al produsului este: "<<this->stocProdus<<'\n';
+    out<<"Producatorul produsului este: "<<this->producatorProdus<<'\n';
+    return out;
+}
+template <>
+istream& ProdusLucratManual<vector<string>> :: citire(istream& in)
+{
+    try //inputuri invalide pentru pret/stoc/numar producatori produs
+    {
+        cout<<"Denumirea produsului este: ";
+        getline(in,denumireProdus);
+        cout<<"Pretul produsului este: ";
+        in>>pretProdus;
+        if(in.fail())
+            throw runtime_error("Input invalid! Te rugam sa introduci o valoare numerica pentru pret!");
+        cout<<"Stocul curent al produsului este: ";
+        in>>stocProdus;
+        if(in.fail())
+            throw runtime_error("Input invalid! Te rugam sa introduci o valoare numerica pentru stoc!");
+        cout<<"Numarul de producatori ai produsului: ";
+        int numar;
+        in>>numar;
+        if(in.fail())
+            throw runtime_error("Input invalid! Te rugam sa introduci o valoare numerica intreaga pentru numarul de producatori!");
+        in.ignore();
+        string producator;
+        for(int i=0; i<numar; i++)
+        {
+            cout<<"Producatorul numarul "<<i+1<<": ";
+            try //incercare de inserare a unui string mult prea mare => memorie insuficienta
+            {
+                getline(in, producator);
+                producatorProdus.push_back(producator);
+            }
+            catch(const bad_alloc& e)
+            {
+                cout<<"!!!Alocare insuficienta de memorie pentru introducerea producatorului!!!";
+            }
+        }
+    }
+    catch(...)
+    {
+        cout<<"!!!Tipul de data pentru input este invalid!!!\n";
+    }
+    return in;
+}
+template <>
+ostream& ProdusLucratManual<vector<string>> :: afisare(ostream& out) const
+{
+    out<<"Denumirea produsului este: "<<this->denumireProdus<<'\n';
+    out<<"Pretul produsului este: "<<this->pretProdus<<'\n';
+    out<<"Stocul curent al produsului este: "<<this->stocProdus<<'\n'; out << "Producatorii produsului sunt:\n";
+    for (int i=0; i<producatorProdus.size(); i++)
+        out<<"Producatorul numarul "<<i+1<<": "<<producatorProdus[i]<<'\n';
+    return out;
+}
+template <class T>
+int ProdusLucratManual<T> :: getStocProdus()const
+{
+    return this->stocProdus;
+}
+bool operator==(const ProdusLucratManual<string>& p, const ProdusLucratManual<string>& pp)
+{
+    return p.getStocProdus() == pp.getStocProdus();
+}
+bool operator==(const ProdusLucratManual<vector<string>>& p, const ProdusLucratManual<vector<string>>& pp)
+{
+    return p.getStocProdus() == pp.getStocProdus();
+}
+
+
+template <class T>
+class Bijuterie:public ProdusLucratManual<T>
+{
+    protected:
+        string materialBijuterie;
+        float greutateBijuterie;
+        string designBijuterie;
+    public:
+        ///Constructorii
+        Bijuterie(); //constructorul fara parametri
+        Bijuterie(string, float, int, T, string, float, string); //constructorul cu toti parametrii
+        Bijuterie(const Bijuterie&);
+
+        ///Operatorul =
+        Bijuterie& operator = (const Bijuterie&);
+
+        ///Citire si afisare
+        istream& citire(istream& in);
+        ostream& afisare(ostream& out) const;
+
+        ///Getter
+        string getDesign() const;
+
+        ///Destructorul
+        virtual ~Bijuterie(){}
+};
+///Constructorii
+template <class T>
+Bijuterie<T> :: Bijuterie():ProdusLucratManual<T>(), materialBijuterie("Anonim"), greutateBijuterie(0), designBijuterie("Anonim"){}
+template <class T>
+Bijuterie<T> :: Bijuterie(string denumireProdus, float pretProdus, int stocProdus, T producatorProdus, string materialBijuterie, float greutateBijuterie, string designBijuterie):ProdusLucratManual<T>(denumireProdus, pretProdus, stocProdus, producatorProdus), materialBijuterie(materialBijuterie), greutateBijuterie(greutateBijuterie), designBijuterie(designBijuterie){}
+template <class T>
+Bijuterie<T> :: Bijuterie(const Bijuterie& produs):ProdusLucratManual<T>(produs), materialBijuterie(produs.materialBijuterie), greutateBijuterie(produs.greutateBijuterie), designBijuterie(produs.designBijuterie){}
+///Operatorul =
+template <class T>
+Bijuterie<T>& Bijuterie<T> :: operator = (const Bijuterie& produs)
+{
+    if(this!=&produs)
+    {
+        ProdusLucratManual<T>::operator=(produs);
+        this->materialBijuterie=produs.materialBijuterie;
+        this->greutateBijuterie=produs.greutateBijuterie;
+        this->designBijuterie=produs.designBijuterie;
+    }
+    return *this;
+}
+///Operatorii de citire si de afisare
+template <class T>
+istream& operator >> (istream& in, Bijuterie<T>& produs)
+{
+    return produs.citire(in);
+}
+template <class T>
+ostream& operator << (ostream& out, const Bijuterie<T>& produs)
+{
+    return produs.afisare(out);
+}
+///Functii de citire si de afisare
+template <class T>
+istream& Bijuterie<T> :: citire(istream& in)
+{
+    try
+    {
+        ProdusLucratManual<T>::citire(in);
+        cout<<"Materialul din care este confectionata bijuteria este: ";
+        getline(in,this->materialBijuterie);
+        cout<<"Greutatea bijuteriei este: ";
+        in>>this->greutateBijuterie;
+        if(in.fail())
+            throw invalid_argument("Input invalid! Te rugam sa introduci o valoare numerica pentru greutatea bijuteriei!");
+        in.ignore();
+        cout<<"Design-ul bijuteriei este: ";
+        getline(in,this->designBijuterie);
+    }
+    catch(...)
+    {
+        cout<<"!!!Tipul de data pentru input este invalid!!!\n";
+    }
+    return in;
+}
+template <class T>
+ostream& Bijuterie<T> :: afisare(ostream &out) const
+{
+    ProdusLucratManual<T>::afisare(out);
+    out<<"Materialul din care este confectionata bijuteria este: "<<this->materialBijuterie<<endl;
+    out<<"Greutatea bijuteriei este: "<<this->greutateBijuterie<<endl;
+    out<<"Design-ul bijuteriei este: "<<this->designBijuterie<<endl;
+    return out;
+}
+///Getter
+template <class T>
+string Bijuterie<T> :: getDesign() const
+{
+    return this->designBijuterie;
+}
+
+class Pandantiv
+{
+    private:
+        string formaPandantiv;
+        string materialPandantiv;
+        float greutatePandantiv;
+    public:
+        ///Constructorii
+        Pandantiv(); //constructorul fara parametri
+        Pandantiv(string, string, float); //constructorul cu toti parametrii
+        Pandantiv(const Pandantiv&);
+
+        ///Operatorul =
+        Pandantiv& operator = (const Pandantiv&);
+
+        ///Operatori
+        bool operator == (const Pandantiv&) const;
+        bool operator < (const Pandantiv&)const;
+
+        ///Citire si afisare
+        istream& citire(istream& in);
+        ostream& afisare(ostream& out) const;
+
+        ///Destructorul
+        ~Pandantiv(){}
+};
+///Constructorii
+Pandantiv :: Pandantiv():formaPandantiv("Anonim"),materialPandantiv("Anonim"),greutatePandantiv(0){}
+Pandantiv :: Pandantiv(string formaPandantiv, string materialPandantiv, float greutatePandantiv):formaPandantiv(formaPandantiv), materialPandantiv(materialPandantiv), greutatePandantiv(greutatePandantiv){}
+Pandantiv :: Pandantiv(const Pandantiv& produs):formaPandantiv(produs.formaPandantiv), materialPandantiv(produs.materialPandantiv), greutatePandantiv(produs.greutatePandantiv){}
+///Operatorul =
+Pandantiv& Pandantiv :: operator = (const Pandantiv& produs)
+{
+    if(this!=&produs)
+    {
+        this->formaPandantiv=produs.formaPandantiv;
+        this->materialPandantiv=produs.materialPandantiv;
+        this->greutatePandantiv=produs.greutatePandantiv;
+    }
+    return *this;
+}
+///Operatorul ==
+bool Pandantiv :: operator == (const Pandantiv& produs) const
+{
+    if(this->formaPandantiv==produs.formaPandantiv && this->materialPandantiv==produs.materialPandantiv && this->greutatePandantiv==produs.greutatePandantiv)
+        return true;
+    return false;
+}
+///Operatorii de citire si de afisare
+istream& operator >> (istream& in, Pandantiv& produs)
+{
+    return produs.citire(in);
+}
+ostream& operator << (ostream& out, const Pandantiv& produs)
+{
+    return produs.afisare(out);
+}
+///Functii de citire si de afisare
+istream& Pandantiv:: citire(istream& in)
+{
+    try
+    {
+        cout<<"Forma pandantivului este: ";
+        getline(in,this->formaPandantiv);
+        cout<<"Materialul pandantivului este: ";
+        getline(in,this->materialPandantiv);
+        cout<<"Greutatea pandantivului este: ";
+        in>>this->greutatePandantiv;
+        if(in.fail())
+            throw invalid_argument("Input invalid! Te rugam sa introduci o valoare numerica pentru greutatea pandantivului!");
+    }
+    catch(...)
+    {
+        cout<<"!!!Tipul de data pentru input este invalid!!!\n";
+    }
+    return in;
+}
+ostream& Pandantiv :: afisare(ostream &out) const
+{
+    out<<"Forma pandantivului este: "<<this->formaPandantiv<<endl;
+    out<<"Materialul pandantivului este: "<<this->materialPandantiv<<endl;
+    out<<"Greutatea pandantivului este: "<<this->greutatePandantiv<<endl;
+    return out;
+}
+bool Pandantiv :: operator <(const Pandantiv& p1) const
+{
+    return this->greutatePandantiv<p1.greutatePandantiv;
+}
+
+
+template <class T>
+class Colier: virtual public Bijuterie<T>
+{
+    private:
+        float circumferintaColier;
+        string culoareColier;
+        Pandantiv pandantiv;
+    public:
+        ///Constructorii
+        Colier(); //constructorul fara parametri
+        Colier(string, float, int, T, string, float, string, float, string, Pandantiv); //constructorul cu toti parametrii
+        Colier(const Colier&);
+
+        ///Operatorul =
+        Colier& operator = (const Colier&);
+
+        ///Citire si afisare
+        istream& citire(istream& in);
+        ostream& afisare(ostream& out) const;
+
+        ///Functionalitate
+        bool verificaRaportPretCalitate()const;
+
+        ///Getter
+        float getCircumferinta()const;
+        float getGreutate()const;
+        float getPret()const;
+        Pandantiv getPandantiv()const;
+
+        ///Destructorul
+        virtual ~Colier(){}
+};
+///Constructorii
+template <class T>
+Colier<T> :: Colier():Bijuterie<T>(),circumferintaColier(0),culoareColier("Anonim"),pandantiv(){}
+template <class T>
+Colier<T> :: Colier(string denumireProdus, float pretProdus, int stocProdus, T producatorProdus, string materialBijuterie, float greutateBijuterie, string designBijuterie, float circumferintaColier, string culoareColier, Pandantiv pandantiv):Bijuterie<T>(denumireProdus, pretProdus, stocProdus, producatorProdus, materialBijuterie, greutateBijuterie, designBijuterie), circumferintaColier(circumferintaColier), culoareColier(culoareColier), pandantiv(pandantiv){}
+template <class T>
+Colier<T> :: Colier(const Colier& produs):Bijuterie<T>(produs), circumferintaColier(produs.circumferintaColier), culoareColier(produs.culoareColier), pandantiv(produs.pandantiv){}
+///Operatorul =
+template <class T>
+Colier<T>& Colier<T> :: operator = (const Colier<T>& produs)
+{
+    if(this!=&produs)
+    {
+        Bijuterie<T>::operator=(produs);
+        this->circumferintaColier=produs.circumferintaColier;
+        this->culoareColier=produs.culoareColier;
+        this->pandantiv=produs.pandantiv;
+    }
+    return *this;
+}
+///Operatorii de citire si de afisare
+template <class T>
+istream& operator >> (istream& in, Colier<T>& produs)
+{
+    return produs.citire(in);
+}
+template <class T>
+ostream& operator << (ostream& out, const Colier<T>& produs)
+{
+    return produs.afisare(out);
+}
+///Functii de citire si de afisare
+template <class T>
+istream& Colier<T> :: citire(istream& in)
+{
+    try
+    {
+        Bijuterie<T>::citire(in);
+        cout<<"Circumferinta colierului este: ";
+        in>>this->circumferintaColier;
+        if(in.fail())
+            throw runtime_error("Input invalid! Te rugam sa introduci o valoare numerica pentru circumferinta colierului!");
+        in.ignore();
+        cout<<"Culoarea colierului este: ";
+        getline(in,this->culoareColier);
+        cout<<"Pandantivul colierului: \n";
+        in>>this->pandantiv;
+        if(in.fail())
+            throw invalid_argument("Input invalid! Te rugam sa introduci un pandantiv valid!");
+    }
+    catch(...)
+    {
+        cout<<"!!!Tipul de data din input este invalid!!!\n";
+    }
+    return in;
+}
+template <class T>
+ostream& Colier<T> :: afisare(ostream &out) const
+{
+    Bijuterie<T>::afisare(out);
+    out<<"Circumferinta colierului este: "<<this->circumferintaColier<<endl;
+    out<<"Culoarea colierului este: "<<this->culoareColier<<endl;
+    out<<"Datele despre pandantivul colierului sunt urmatoarele: "<<endl;
+    out<<this->pandantiv;
+    out<<endl;
+    return out;
+}
+///Getteri
+template <class T>
+float Colier<T> :: getCircumferinta()const
+{
+    return this->circumferintaColier;
+}
+template <class T>
+float Colier<T> :: getGreutate()const
+{
+    return this->greutateBijuterie;
+}
+template <class T>
+float Colier<T> :: getPret()const
+{
+    return this->pretProdus;
+}
+template <class T>
+Pandantiv Colier<T> :: getPandantiv()const
+{
+    return this->pandantiv;
+}
+///Functionalitate
+template <class T>
+bool Colier<T> :: verificaRaportPretCalitate()const
+{
+    return (this->getCircumferinta()>24&&this->getGreutate()>5&&this->getPret()<150);
+}
+
+class Singleton
+{
+    private:
+        static Singleton* instance;
+        Singleton(){}
+        vector<ProdusLucratManual<string>*> produseString;
+        vector<ProdusLucratManual<vector<string>>*> produseVector;
+        set<string> designPosibil = {"vintage", "minimalist", "boho", "glamour"};
+        list<Pandantiv> pandantive;
+        map<Pandantiv, Colier<string>*> perecheColierPandantivString;
+        map<Pandantiv, Colier<vector<string>>*> perecheColierPandantivVector;
+    public:
+        static Singleton* getInstance();
+
+        template <class U>
+        void addProdus(U& produs); //ADD produs lucrat manual, bijuterie, colier
+        void addPandantiv(const Pandantiv& pandantiv); //ADD pandantiv
+        template <class U>
+        void addColierPandantiv(const Pandantiv& pandantiv, Colier<U>& colier);
+        template <class U>
+        void verificareDesignBijuterie(const U& bijuterie); //functionalitate 1 - verificare daca designul unei bijuterii este valid
+        template <class T>
+        void afisareProduse(); //AFISARE produs lucrat manual, bijuterie, colier
+        void afisarePandantive(); //AFISARE pandantiv
+        void afisareColierePandantive();
+        template <class T>
+        void stergereProdus(const ProdusLucratManual<T>& produs); //DELETE produs lucrat manual, bijuterie, colier
+        void stergerePandantiv(const Pandantiv& pandantiv); //DELETE pandantiv
+        template <class T>
+        void actualizareProdus(ProdusLucratManual<T>& produsVechi, ProdusLucratManual<T>& produsNou); //UPDATE produs lucrat manual, bijuterie, colier
+        void actualizarePandantiv(const Pandantiv& pandantivVechi, const Pandantiv& pandantivNou); //UPDATE pandantiv
+        template <class T>
+        void raport(const ProdusLucratManual<T>&);
+        void afisareMeniu();
+};
+Singleton* Singleton :: instance=NULL;
+Singleton* Singleton :: getInstance()
+{
+    if(Singleton::instance!=NULL)
+        return Singleton :: instance;
+    else
+    {
+       instance=new Singleton();
+       return instance;
+    }
+}
+template<class U>
+void Singleton::addProdus(U& produs)
+{
+    if(auto colier = dynamic_cast<Colier<string>*>(&produs))
+        produseString.push_back(new Colier<string>(*colier));
+    else if(auto colierVector = dynamic_cast<Colier<vector<string>>*>(&produs))
+        produseVector.push_back(new Colier<vector<string>>(*colierVector));
+    else if(auto bijuterie = dynamic_cast<Bijuterie<string>*>(&produs))
+        produseString.push_back(new Bijuterie<string>(*bijuterie));
+    else if(auto bijuterieVector = dynamic_cast<Bijuterie<vector<string>>*>(&produs))
+        produseVector.push_back(new Bijuterie<vector<string>>(*bijuterieVector));
+    else if(auto lucratManual = dynamic_cast<ProdusLucratManual<string>*>(&produs))
+        produseString.push_back(new ProdusLucratManual<string>(*lucratManual));
+    else if(auto lucratManualVector = dynamic_cast<ProdusLucratManual<vector<string>>*>(&produs))
+        produseVector.push_back(new ProdusLucratManual<vector<string>>(*lucratManualVector));
+    else
+        throw runtime_error("Produs inexistent!");
+    cout<<"\n~~>Produsul a fost adaugat cu succes!\n";
+}
+void Singleton :: addPandantiv(const Pandantiv& pandantiv) //ADD pandantiv
+{
+    pandantive.push_back(pandantiv);
+}
+template <class U>
+void Singleton :: addColierPandantiv(const Pandantiv& pandantiv, Colier<U>& colier)
+{
+    if (typeid(colier)==typeid(Colier<string>))
+        perecheColierPandantivString[pandantiv] = new Colier<string>(dynamic_cast<Colier<string>&>(colier));
+    else if (typeid(colier)==typeid(Colier<vector<string>>))
+        perecheColierPandantivVector[pandantiv] = new Colier<vector<string>>(dynamic_cast<Colier<vector<string>>&>(colier));
+    else
+    {
+         throw runtime_error("ERR! Tipul colierului este invalid!");
+    }
+    cout << "\n~~>Perechea a fost adaugata cu succes!\n";
+}
+
+template <class U>
+void Singleton :: verificareDesignBijuterie(const U& bijuterie) //functionalitate 1 - verificare daca designul unei bijuterii este valid
+{
+    auto gasit=designPosibil.find(bijuterie.getDesign());
+    if(gasit==designPosibil.end())
+        throw runtime_error("Designul bijuteriei este invalid, nu face parte din cele posibile!");
+    else
+        cout<<"\nBijuteria este autentica!\n";
+}
+template <class T>
+void Singleton :: afisareProduse() //AFISARE produs lucrat manual, bijuterie, colier
+{
+    for(int i=0; i<produseString.size(); i++)
+    {
+            if(dynamic_cast<ProdusLucratManual<T>*>(produseString[i])!=nullptr)
+            {
+                cout<<*produseString[i]<<endl;
+            }
+            else if(dynamic_cast<Bijuterie<T>*>(produseString[i])!=nullptr)
+            {
+                cout<<*produseString[i]<<endl;
+            }
+            else if(dynamic_cast<Colier<T>*>(produseString[i])!=nullptr)
+            {
+                cout<<*produseString[i]<<endl;
+            }
+    }
+    for(int i=0; i<produseVector.size(); i++)
+    {
+            if(dynamic_cast<ProdusLucratManual<T>*>(produseVector[i])!=nullptr)
+            {
+                cout<<*produseVector[i]<<endl;
+            }
+            else if(dynamic_cast<Bijuterie<T>*>(produseVector[i])!=nullptr)
+            {
+                cout<<*produseVector[i]<<endl;
+            }
+            else if(dynamic_cast<Colier<T>*>(produseVector[i])!=nullptr)
+            {
+                cout<<*produseVector[i]<<endl;
+            }
+    }
+}
+void Singleton :: afisarePandantive() //AFISARE pandantiv
+{
+    for(auto pandantiv=pandantive.begin(); pandantiv!=pandantive.end(); pandantiv++)
+        cout<<*pandantiv<<endl;
+}
+void Singleton :: afisareColierePandantive()
+{
+    int pereche=1;
+    for(auto i=perecheColierPandantivString.begin(); i!=perecheColierPandantivString.end(); i++, pereche++)
+        cout<<"Perechea "<<pereche<<" contine pandantivul: "<<i->first<<" si colierul: "<<*i->second<<endl;
+    for(auto i=perecheColierPandantivVector.begin(); i!=perecheColierPandantivVector.end(); i++, pereche++)
+        cout<<"Perechea "<<pereche<<" contine pandantivul: "<<i->first<<" si colierul: "<<*i->second<<endl;
+    if(pereche==1)
+        throw runtime_error("Nu exista coliere cu pandantive de afisat!");
+}
+template<class T>
+void Singleton :: stergereProdus(const ProdusLucratManual<T>& produs) //DELETE produs lucrat manual, bijuterie, colier
+{
+    if(dynamic_cast<const ProdusLucratManual<string>*>(&produs))
+    {
+        bool ok=0;
+        const ProdusLucratManual<string>* aux= dynamic_cast<const ProdusLucratManual<string>*>(&produs);
+        for(int i=0; i<produseString.size(); i++)
+        {
+            if(*aux==*produseString[i])
+            {
+                produseString.erase(find(produseString.begin(),produseString.end(),produseString[i]));
+                cout<<"Produsul a fost sters cu succes.\n";
+                ok=1;
+            }
+        }
+        if(ok==0)
+        {
+            throw logic_error("Produsul nu a fost gasit in lista de produse!");
+        }
+    }
+    else if(dynamic_cast<const ProdusLucratManual<vector<string>>*>(&produs))
+    {
+        bool ok=0;
+        const ProdusLucratManual<vector<string>>* aux= dynamic_cast<const ProdusLucratManual<vector<string>>*>(&produs);
+        for(int i=0; i<produseVector.size(); i++)
+        {
+            if(*aux==*produseVector[i])
+            {
+                produseVector.erase(find(produseVector.begin(),produseVector.end(),produseVector[i]));
+                cout<<"Produsul a fost sters cu succes.\n";
+                ok=1;
+            }
+        }
+        if(ok==0)
+        {
+            throw logic_error("Produsul nu a fost gasit in lista de produse!");
+        }
+    }
+    else
+        throw runtime_error("Produs invalid!");
+}
+void Singleton :: stergerePandantiv(const Pandantiv& pandantiv) //DELETE pandantiv
+{
+    auto gasit=find(pandantive.begin(), pandantive.end(), pandantiv);
+    if(gasit!=pandantive.end())
+    {
+        pandantive.erase(gasit);
+        cout<<"Pandantivul a fost sters cu succes.\n";
+    }
+    else
+    {
+        throw logic_error("Pandantivul nu a fost gasit in lista de pandantive!");
+    }
+}
+template<class T>
+void Singleton::actualizareProdus(ProdusLucratManual<T>& produsVechi, ProdusLucratManual<T>& produsNou) //UPDATE produs lucrat manual, bijuterie, colier
+{
+    if (dynamic_cast<ProdusLucratManual<string>*>(&produsVechi))
+    {
+        bool modificat=0;
+        const ProdusLucratManual<string>* aux1= dynamic_cast<const ProdusLucratManual<string>*>(&produsVechi);
+        const ProdusLucratManual<string>* aux2= dynamic_cast<const ProdusLucratManual<string>*>(&produsNou);
+        for(int i=0; i<produseString.size(); i++)
+        {
+            if(*aux1==*produseString[i])
+            {
+               *produseString[i]=*aux2;
+               cout << "Produsul a fost actualizat cu succes.\n";
+               modificat=1;
+               break;
+            }
+        }
+        if(modificat==0)
+        {
+            throw logic_error("Produsul nu a fost gasit in lista de produse.");
+        }
+    }
+    else if (dynamic_cast<ProdusLucratManual<vector<string>>*>(&produsVechi))
+    {
+        bool modificat=0;
+        const ProdusLucratManual<vector<string>>* aux1= dynamic_cast<const ProdusLucratManual<vector<string>>*>(&produsVechi);
+        const ProdusLucratManual<vector<string>>* aux2= dynamic_cast<const ProdusLucratManual<vector<string>>*>(&produsNou);
+        for(int i=0; i<produseVector.size(); i++)
+        {
+            if(*aux1==*produseVector[i])
+            {
+               *produseVector[i]=*aux2;
+               cout << "Produsul a fost actualizat cu succes.\n";
+               modificat=1;
+               break;
+            }
+        }
+        if(modificat==0)
+        {
+            throw logic_error("Produsul nu a fost gasit in lista de produse.");
+        }
+    }
+}
+void Singleton :: actualizarePandantiv(const Pandantiv& pandantivVechi, const Pandantiv& pandantivNou) //UPDATE pandantiv
+{
+    auto gasit=find(pandantive.begin(), pandantive.end(), pandantivVechi);
+    if(gasit!=pandantive.end())
+    {
+        *gasit=pandantivNou;
+        cout<<"Pandantivul a fost actualizat cu succes.\n";
+    }
+    else
+    {
+        throw logic_error("Pandantivul nu a fost gasit in lista.");
+    }
+}
+template <class T>
+void Singleton::raport(const ProdusLucratManual<T>& produs)
+{
+    const Colier<T>* colier = dynamic_cast<const Colier<T>*>(&produs);
+    if (colier) {
+        if (colier->verificaRaportPretCalitate())
+            cout << "Produsul este ok raport pret calitate.\n";
+        else
+            cout << "Produsul nu este ok raport pret calitate.\n";
+    } else
+        throw runtime_error("Nu a functionat cast-ul!");
+}
+void Singleton :: afisareMeniu()
+{
+    cout<<"MENIU ~~~ ATELIERUL DE LUCRU MANUAL\n\n\n";
+    cout<<"~~Mai jos veti gasi optiunile pe care le puteti alege pentru a opera asupra atelierului.\n\n";
+    cout<<"~~Apasati tasta dorita:\n";
+    cout<<"1. Afisare produse\n2. Afisare pandantive\n3. Afisare pereche pandantiv+colier\n4. Adaugare produs nou\n5. Adaugare pandantiv nou\n6. Adaugare pereche pandantiv+colier\n";
+    cout<<"7. Stergere produs\n8. Stergere pandantiv\n9. Actualizare produs(denumire, stoc, pret, producator)\n10. Actualizare pandantiv\n11. Verificare autenticitate bijuterie\n";
+    cout<<"12. Verificare raport pret calitate\n13. EXIT\n\n";
+    cout<<"~~Tasta dumneavoastra: ";
+}
+int main()
+{
+     Singleton *meniu=Singleton::getInstance();
+     ProdusLucratManual<string> p1("cutie de bijuterii",23.50,7,"Andreea");
+     ProdusLucratManual<vector<string>> p2("tablou de primavara",55.67,10,{"Maria","Ioana"});
+     Bijuterie<string> p3("bratara",14.5,66,"Simona","ata",5,"boho");
+     Bijuterie<vector<string>> p4("coronita",15.99,10,{"Andrada","Ecaterina"},"metal",15,"vintage");
+     Pandantiv pp1("albina","plastic",5);
+     Pandantiv pp2("capsuna","plastic",7);
+     Colier<string> p5("colier margele",22.78,33,"Iulia","margele",4,"boho",22.4,"roz",pp1);
+     Colier<vector<string>> p6("colier paiete",10.77,44,{"Carina","Catalina"},"paiete",5.5,"vintage",34,"mov",pp2);
+
+     meniu->addProdus(p1);
+     meniu->addProdus(p2);
+     meniu->addProdus(p3);
+     meniu->addProdus(p4);
+     meniu->addProdus(p5);
+     meniu->addProdus(p6);
+
+     meniu->addPandantiv(pp1);
+     meniu->addPandantiv(pp2);
+
+     meniu->addColierPandantiv(pp1,p5);
+     meniu->addColierPandantiv(pp2,p6);
+
+     system("cls");
+     int tasta;
+     try
+     {
+         do
+         {
+             meniu->afisareMeniu();
+             cin>>tasta;
+             if(cin.fail())
+                throw invalid_argument("Input invalid! Te rugam sa introduci o valoare numerica!");
+             else if(tasta<1 || tasta>13)
+                throw out_of_range("Tasta trebuie sa fie intre 1 si 13 inclusiv!");
+             switch(tasta)
+             {
+                case 1:
+                {
+                    try
+                    {
+                        system("cls");
+                        cout<<"Daca produsul are doar un producator, selectati 1. Altfel, selectati 2.\nTasta: ";
+                        cin>>tasta;
+                        if(tasta==1)
+                        {
+                            meniu->afisareProduse<string>();
+                            break;
+                        }
+                        else if(tasta==2)
+                        {
+                            meniu->afisareProduse<vector<string>>();
+                            break;
+                        }
+                        else throw out_of_range("Tasta invalida!");
+                        break;
+                    }
+                    catch(const out_of_range& e)
+                    {
+                        cout<<e.what();
+                    }
+                    catch(const runtime_error& e)
+                    {
+                        cout<<"Eroare: "<<e.what()<<endl;
+                    }
+                    break;
+                }
+                case 2:
+                {
+                    try
+                    {
+                        system("cls");
+                        meniu->afisarePandantive();
+                        break;
+                    }
+                    catch(...)
+                    {
+                        cout<<"ERR!";
+                    }
+                    break;
+                }
+                case 3:
+                {
+                    try
+                    {
+                        system("cls");
+                        meniu->afisareColierePandantive();
+                        break;
+                    }
+                    catch(const runtime_error& e)
+                    {
+                        cout<<"Eroare! "<<e.what();
+                    }
+                    break;
+                }
+                case 4:
+                {
+                    try
+                    {
+                        system("cls");
+                        cout<<"Ce fel de produs ati dori sa adaugati?\n1.Produs lucrat manual\n2.Bijuterie\n3.Colier\nTasta dumneavoastra: ";
+                        cin>>tasta;
+                        if(tasta==1)
+                        {
+                            system("cls");
+                            cout<<"Daca produsul are doar un producator, selectati 1. Altfel, selectati 2.\nTasta: ";
+                            cin>>tasta;
+                            if(tasta==1)
+                            {
+                                cin.ignore();
+                                ProdusLucratManual<string> p;
+                                cin>>p;
+                                meniu->addProdus(p);
+                            }
+                            else if(tasta==2)
+                            {
+                                cin.ignore();
+                                ProdusLucratManual<vector<string>> p;
+                                cin>>p;
+                                meniu->addProdus(p);
+                            }
+                            else throw out_of_range("Tasta invalida!");
+                            break;
+                        }
+                        else if(tasta==2)
+                        {
+                            system("cls");
+                            cout<<"Daca produsul are doar un producator, selectati 1. Altfel, selectati 2.\nTasta: ";
+                            cin>>tasta;
+                            if(tasta==1)
+                            {
+                                cin.ignore();
+                                Bijuterie<string> p;
+                                cin>>p;
+                                meniu->addProdus(p);
+                            }
+                            else if(tasta==2)
+                            {
+                                cin.ignore();
+                                Bijuterie<vector<string>> p;
+                                cin>>p;
+                                meniu->addProdus(p);
+                            }
+                            else throw out_of_range("Tasta invalida!");
+                            break;
+                        }
+                        else if(tasta==3)
+                        {
+                            system("cls");
+                            cout<<"Daca produsul are doar un producator, selectati 1. Altfel, selectati 2.\nTasta: ";
+                            cin>>tasta;
+                            if(tasta==1)
+                            {
+                                cin.ignore();
+                                Colier<string> p;
+                                cin>>p;
+                                meniu->addProdus(p);
+                            }
+                            else if(tasta==2)
+                            {
+                                cin.ignore();
+                                Colier<vector<string>> p;
+                                cin>>p;
+                                meniu->addProdus(p);
+                            }
+                            else throw out_of_range("Tasta invalida!");
+                        }
+                        else throw out_of_range("Tasta invalida");
+                        break;
+                    }
+                    catch(const out_of_range& e)
+                    {
+                        cout<<e.what();
+                    }
+                    catch(...)
+                    {
+                        cout<<"\n~~>ERR! Produsul nu a putut fi adaugat: "<< '\n';
+                    }
+                    break;
+                }
+                case 5:
+                {
+                    try
+                    {
+                        system("cls");
+                        Pandantiv p;
+                        cin.ignore();
+                        cin>>p;
+                        meniu->addPandantiv(p);
+                        break;
+                    }
+                    catch(...)
+                    {
+                        cout<<"\n~~>ERR! Produsul nu a putut fi adaugat.\n";
+                    }
+                    break;
+                }
+                case 6:
+                {
+                    try
+                    {
+                        system("cls");
+                        cout<<"Daca colierul are doar un producator, selectati 1. Altfel, selectati 2.\nTasta: ";
+                        cin>>tasta;
+                        if(tasta==1)
+                        {
+                            cout<<"Colierul: \n\n";
+                            cin.ignore();
+                            Colier<string> c;
+                            cin>>c;
+                            meniu->addColierPandantiv(c.getPandantiv(),c);
+                            break;
+                        }
+                        else if(tasta==2)
+                        {
+                            cout<<"Colierul: \n\n";
+                            Colier<vector<string>> c;
+                            cin.ignore();
+                            cin>>c;
+                            meniu->addColierPandantiv(c.getPandantiv(),c);
+                            break;
+                        }
+                        else throw out_of_range("Tasta invalida!");
+                        break;
+                    }
+                    catch(const out_of_range& e)
+                    {
+                        cout<<e.what();
+                    }
+                    catch(const runtime_error& e)
+                    {
+                        cout<<e.what();
+                    }
+                    break;
+                }
+                case 7:
+                {
+                    try
+                    {
+                        system("cls");
+                        cout<<"Daca produsul are doar un producator, selectati 1. Altfel, selectati 2.\nTasta: ";
+                        cin>>tasta;
+                        if(tasta==1)
+                        {
+                            ProdusLucratManual<string> p;
+                            cin.ignore();
+                            cin>>p;
+                            meniu->stergereProdus(p);
+                            break;
+                        }
+                        else if(tasta==2)
+                        {
+                            ProdusLucratManual<vector<string>> p;
+                            cin.ignore();
+                            cin>>p;
+                            meniu->stergereProdus(p);
+                            break;
+                        }
+                        else throw out_of_range("Tasta invalida!");
+                        break;
+                    }
+                    catch(const out_of_range& e)
+                    {
+                        cout<<e.what();
+                    }
+                    catch(const logic_error& e)
+                    {
+                        cout<<"Eroare: "<<e.what()<<endl;
+                    }
+                    catch(...)
+                    {
+                        cout<<"Produsul introdus nu apartine atelierului!\n";
+                    }
+                    break;
+                }
+                case 8:
+                {
+                    try
+                    {
+                        system("cls");
+                        Pandantiv p;
+                        cin.ignore();
+                        cin>>p;
+                        meniu->stergerePandantiv(p);
+                        break;
+                    }
+                    catch(const logic_error& e)
+                    {
+                        cout<<"Eroare: "<<e.what()<<endl;
+                    }
+                    break;
+                }
+                case 9:
+                {
+                    try
+                    {
+                        system("cls");
+                        cout<<"Daca produsul are doar un producator, selectati 1. Altfel, selectati 2.\nTasta: ";
+                        cin>>tasta;
+                        if(tasta==1)
+                        {
+                            cout<<"Produsul de inlocuit este:\n\n";
+                            ProdusLucratManual<string> p;
+                            cin.ignore();
+                            cin>>p;
+                            cout<<"Produsul cu care doriti sa inlocuiti produsul vechi este:\n\n";
+                            ProdusLucratManual<string> p2;
+                            cin>>p2;
+                            meniu->actualizareProdus(p,p2);
+                            break;
+                        }
+                        else if(tasta==2)
+                        {
+                            cout<<"Produsul de inlocuit este:\n\n";
+                            ProdusLucratManual<vector<string>> p;
+                            cin.ignore();
+                            cin>>p;
+                            cout<<"Produsul cu care doriti sa inlocuiti produsul vechi este:\n\n";
+                            ProdusLucratManual<vector<string>> p2;
+                            cin>>p2;
+                            meniu->actualizareProdus(p,p2);
+                            break;
+                        }
+                        else throw out_of_range("Tasta invalida!");
+                        break;
+                    }
+                    catch(const out_of_range& e)
+                    {
+                        cout<<e.what();
+                    }
+                    catch (const logic_error& e)
+                    {
+                        cout << "Eroare: " << e.what() << endl;
+                    }
+                    break;
+                }
+                case 10:
+                {
+                    try
+                    {
+                        system("cls");
+                        cout<<"Produsul de inlocuit este:\n\n";
+                        cin.ignore();
+                        Pandantiv p;
+                        cin>>p;
+                        cout<<"Produsul cu care doriti sa inlocuiti produsul vechi este:\n\n";
+                        cin.ignore();
+                        Pandantiv p2;
+                        cin>>p2;
+                        meniu->actualizarePandantiv(p,p2);
+                        break;
+                    }
+                    catch(const logic_error& e)
+                    {
+                        cout<<"Eroare: "<<e.what()<<endl;
+                    }
+                    break;
+                }
+                case 11:
+                {
+                    try
+                    {
+                        system("cls");
+                        cout<<"Daca produsul are doar un producator, selectati 1. Altfel, selectati 2.\nTasta: ";
+                        cin>>tasta;
+                        if(tasta==1)
+                        {
+                            cout<<"Introduceti bijuteria de verificat:\n\n";
+                            Bijuterie<string> p;
+                            cin.ignore();
+                            cin>>p;
+                            meniu->verificareDesignBijuterie(p);
+                            break;
+                        }
+                        else if(tasta==2)
+                        {
+                            cout<<"Introduceti bijuteria de verificat:\n\n";
+                            Bijuterie<vector<string>> p;
+                            cin.ignore();
+                            cin>>p;
+                            meniu->verificareDesignBijuterie(p);
+                            break;
+                        }
+                        else throw out_of_range("Tasta invalida!");
+                        break;
+                    }
+                    catch(const out_of_range& e)
+                    {
+                        cout<<"Eroare! "<<e.what();
+                    }
+                    catch(const runtime_error& e)
+                    {
+                        cout<<"!!!Designul bijuteriei trebuie sa faca parte din cele posibile!!!\n"<<e.what()<<endl;
+                    }
+                    break;
+                }
+                case 12:
+                {
+                    try
+                    {
+                        system("cls");
+                        cout<<"Daca produsul are doar un producator, selectati 1. Altfel, selectati 2.\nTasta: ";
+                        cin>>tasta;
+                        if(tasta==1)
+                        {
+                            cout<<"Introduceti produsul de verificat:\n\n";
+                            Colier<string> p;
+                            cin.ignore();
+                            cin>>p;
+                            meniu->raport(p);
+                            break;
+                        }
+                        else if(tasta==2)
+                        {
+                            cout<<"Introduceti bijuteria de verificat:\n\n";
+                            Colier<vector<string>> p;
+                            cin.ignore();
+                            cin>>p;
+                            meniu->raport(p);
+                            break;
+                        }
+                        else throw out_of_range("Tasta invalida!");
+                        break;
+                    }
+                    catch(const out_of_range& e)
+                    {
+                        cout<<"Eroare! "<<e.what();
+                    }
+                    catch(const runtime_error& e)
+                    {
+                        cout<<"Eroare!"<<e.what();
+                    }
+                    break;
+                }
+                default:
+                {
+                    tasta=13;
+                    system("cls");
+                    break;
+                }
+             }
+         }while(tasta!=13);
+     }
+     catch(...)
+     {
+         cout<<"Eroare la input!";
+     }
+     return 0;
+}
+
